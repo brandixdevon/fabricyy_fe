@@ -1,17 +1,19 @@
 import React from 'react';
 import 'antd/dist/antd.css';
 import '../index.css';
-import { Layout, Breadcrumb, Typography, Row, Col, Select, Input, Upload, Button, notification, Collapse } from 'antd';
+import { Layout, Breadcrumb, Typography, Row, Col, Tooltip, Select, Input, Upload, Button, notification, Collapse } from 'antd';
 import 'antd/dist/antd.css';
 import HEADERVIEW from '../layout/headerview';
 import FOOTERVIEW from '../layout/footerview';
-import { CaretRightOutlined,CloudDownloadOutlined  } from '@ant-design/icons';
+import { CaretRightOutlined,CloudDownloadOutlined,SearchOutlined  } from '@ant-design/icons';
 import readXlsxFile from 'read-excel-file';
+import axios from 'axios';
 
 function CreateNew() 
 {
     const {Content} = Layout;
     const { Panel } = Collapse;
+    const { Option } = Select;
 
     var apiurl = localStorage.getItem('session_api');
     var username = localStorage.getItem('session_username');
@@ -24,9 +26,19 @@ function CreateNew()
     const [var_factory, setvar_factory] = React.useState("");
     const [var_crdate, setvar_crdate] = React.useState("");
 
+    const [var_btngetbom, setvar_btngetbom] = React.useState(true);
+    const [var_drpseason, setvar_drpseason] = React.useState(true);
+
+    const [ds_seasonlist,setds_seasonlist] = React.useState([]);
+    const [ds_bomlist,setds_bomlist] = React.useState([]);
+
     const [fileOLR, setFileOLR] = React.useState("");
     const [fileOLR_data, setFileOLR_data] = React.useState([]);
     const [fileOLR_cols, setFileOLR_cols] = React.useState([]);
+
+    const [var_plmsession, setvar_plmsession] = React.useState("");
+    const [var_plmstyle, setvar_plmstyle] = React.useState("");
+    const [var_plmsseason, setvar_plmsseason] = React.useState("");
     
     React.useEffect(()=>{
 
@@ -230,6 +242,142 @@ function CreateNew()
 
       }
 
+      const plmstyleonchange = (e) => {
+        setvar_plmstyle(e.target.value);
+        setvar_drpseason(true);
+
+      }
+
+      async function getPLMSeasonList()
+      {
+        setvar_drpseason(true);
+
+        await fetch(`${apiurl}/plmaccess/plmsession`)
+        .then(res => res.json())
+        .then(response => { 
+
+            if(response.Type === "SUCCESS")
+            {
+              setvar_plmsession(response.Token);
+
+              const sendOptions_2 = {
+                method: 'post',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    "styleid" : var_plmstyle , 
+                    "token" : response.Token})
+              };
+    
+              fetch(`${apiurl}/plmaccess/plmseasonslist`,sendOptions_2)
+              .then(res_1 => res_1.json())
+              .then(response_1 => { 
+    
+                  if(response_1.Type === "SUCCESS")
+                  {
+                      setds_seasonlist(response_1.Dataset);
+
+                      notification['success']({
+                        message: 'Success Notification',
+                        description:`${response_1.Dataset.length} No of Seasons are loading.` ,
+                        style:{color: '#000',border: '1px solid #ccffcc',backgroundColor: '#99ff66'},
+                      });
+
+                      setvar_drpseason(false);
+                  }
+                  else
+                  {
+                      notification['error']({
+                          message: 'Data Error',
+                          description: 'Data Loading Error.',
+                          style:{color: '#000',border: '1px solid #ff6961',backgroundColor: '#ffa39e'},
+                        });
+                  }
+    
+                  
+              })
+              .catch(error_1 => {
+    
+                  notification['error']({
+                      message: 'Data Error',
+                      description: error_1,
+                      style:{color: '#000',border: '1px solid #ff6961',backgroundColor: '#ffa39e'},
+                    });
+    
+              }); 
+
+            }
+            else
+            {
+                notification['error']({
+                    message: 'Data Error',
+                    description: 'Can not Access PLM Using API (Token Error).',
+                    style:{color: '#000',border: '1px solid #ff6961',backgroundColor: '#ffa39e'},
+                  });
+            }
+
+            
+        })
+        .catch(error => {
+
+            notification['error']({
+                message: 'Data Error',
+                description: error,
+                style:{color: '#000',border: '1px solid #ff6961',backgroundColor: '#ffa39e'},
+              });
+
+        });
+
+        
+      }
+
+      async function handleChangeSeason(value) {
+        setvar_plmsseason(value);
+
+        const sendOptions = {
+          method: 'post',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+              "seasonid" : value , 
+              "token" : var_plmsession})
+        };
+
+        await fetch(`${apiurl}/plmaccess/plmapperalboms`,sendOptions)
+        .then(res => res.json())
+        .then(response => { 
+
+            if(response.Type === "SUCCESS")
+            {
+              setds_bomlist(response.Dataset);
+
+              notification['success']({
+                message: 'Success Notification',
+                description:`${response.Dataset.length} No of Bom Versions are loading.` ,
+                style:{color: '#000',border: '1px solid #ccffcc',backgroundColor: '#99ff66'},
+              });
+            }
+            else
+            {
+                notification['error']({
+                    message: 'Data Error',
+                    description: 'Can not Access PLM.',
+                    style:{color: '#000',border: '1px solid #ff6961',backgroundColor: '#ffa39e'},
+                  });
+            }
+
+            
+        })
+        .catch(error => {
+
+            notification['error']({
+                message: 'Data Error',
+                description: error,
+                style:{color: '#000',border: '1px solid #ff6961',backgroundColor: '#ffa39e'},
+              });
+
+        });
+        
+      }
+
     return( <Layout style={{ minHeight: '100vh' }}>
     <Layout className="site-layout">
       <HEADERVIEW />
@@ -292,7 +440,30 @@ function CreateNew()
 
               <hr/>
               <p style={{color:"red"}}>** Click Here To Get PLM BOM Data</p>
-              <Button onClick={GetBom} type="primary" icon={<CloudDownloadOutlined />}> Get PLM BOMs </Button>
+              <p style={{color:"purple"}}>PLM Style Number</p>
+              <Input onChange={plmstyleonchange} type="text" style={{width:"80%"}}/>
+              <Tooltip title="Get Data From PLM">
+                <Button style={{marginLeft:"5px"}} type="primary" onClick={getPLMSeasonList} shape="circle" icon={<SearchOutlined />} />
+              </Tooltip>
+              
+              <p style={{color:"purple"}}>Select Season</p>
+
+              <Select style={{ width:"100%" }} disabled={var_drpseason} onChange={handleChangeSeason}>
+              {
+                ds_seasonlist.map((row) => <Option value={row.idstyle}>{row.fs}</Option>)
+              }
+              </Select>
+
+              <p style={{color:"purple"}}>Select Bom version</p>
+
+              <Select style={{ width:"100%" }}>
+              {
+                ds_bomlist.map((row) => <Option value={row.id}>{row.node_name}</Option>)
+              }
+                
+              </Select>
+
+              <Button onClick={GetBom} type="primary" icon={<CloudDownloadOutlined />} disabled={var_btngetbom}> Get PLM BOMs </Button>
 
             </Col>
             <Col span={18}></Col>
