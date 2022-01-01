@@ -19,6 +19,9 @@ function CreateNew()
     const [var_oldstyleno, setvar_oldstyleno] = React.useState("");
     const [var_factory, setvar_factory] = React.useState("");
 
+    const [ds_factory, setds_factory] = React.useState([]);
+    const [ds_customer, setds_customer] = React.useState([]);
+
     function handleChangeCategory(value) {
         setvar_customer(value);
       }
@@ -136,6 +139,70 @@ function CreateNew()
         
     
       };
+
+      React.useEffect(()=>{
+ 
+        fetch(`${apiurl}/masterdata/getcustomers`)
+        .then(res => res.json())
+        .then(response => { 
+  
+            if(response.Type === "SUCCESS")
+            {
+              //alert(JSON.stringify(response.Data));
+              setds_customer(response.Data);
+            }
+            else
+            {
+                notification['error']({
+                    message: 'Data Error',
+                    description: 'Customers Data Loading Error.',
+                    style:{color: '#000',border: '1px solid #ff6961',backgroundColor: '#ffa39e'},
+                  });
+            }
+  
+             
+        })
+        .catch(error => {
+  
+            notification['error']({
+                message: 'Data Error',
+                description: error,
+                style:{color: '#000',border: '1px solid #ff6961',backgroundColor: '#ffa39e'},
+              });
+  
+        });
+
+        fetch(`${apiurl}/masterdata/getfactories`)
+        .then(res => res.json())
+        .then(response => { 
+  
+            if(response.Type === "SUCCESS")
+            {
+              //alert(JSON.stringify(response.Data));
+              setds_factory(response.Data);
+            }
+            else
+            {
+                notification['error']({
+                    message: 'Data Error',
+                    description: 'Factories Data Loading Error.',
+                    style:{color: '#000',border: '1px solid #ff6961',backgroundColor: '#ffa39e'},
+                  });
+            }
+  
+             
+        })
+        .catch(error => {
+  
+            notification['error']({
+                message: 'Data Error',
+                description: error,
+                style:{color: '#000',border: '1px solid #ff6961',backgroundColor: '#ffa39e'},
+              });
+  
+        });
+  
+      },[apiurl])
     
     return( <Layout style={{ minHeight: '100vh' }}>
     <Layout className="site-layout">
@@ -152,9 +219,10 @@ function CreateNew()
             <Typography.Text type="danger">** Required Field</Typography.Text>
             <br/><br/>
             <Typography.Text type="info">1. Select Your Buyer Category **</Typography.Text><br/>
-            <Select defaultValue="VS Pink" style={{ width: 120 }} onChange={handleChangeCategory}>
-                <Select.Option value="1">VS Pink</Select.Option>
-                <Select.Option value="2">PVH</Select.Option>
+            <Select style={{ width: 120 }} onChange={handleChangeCategory}>
+              {ds_customer.map((row) => (
+                  <Select.Option value={row.cus_id}>{row.cus_name}</Select.Option>
+            ))}
             </Select>
             <br/><br/>
 
@@ -171,10 +239,10 @@ function CreateNew()
             <br/><br/>
 
             <Typography.Text type="info">5. Factory **</Typography.Text><br/>
-            <Select defaultValue="Welisara" style={{ width: 120 }} onChange={handleChangeFactory}>
-                <Select.Option value="1">Welisara</Select.Option>
-                <Select.Option value="2">Merigama 1</Select.Option>
-                <Select.Option value="3">Merigama 2</Select.Option>
+            <Select style={{ width: 120 }} onChange={handleChangeFactory}>
+              {ds_factory.map((row) => (
+                  <Select.Option value={row.fac_id}>{row.fac_name}</Select.Option>
+            ))}
             </Select>
             <br/><br/>
             <Button type="primary" shape="round" size={"large"} onClick={handleClick}> Create </Button>

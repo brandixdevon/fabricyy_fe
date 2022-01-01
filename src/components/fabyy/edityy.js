@@ -1,20 +1,21 @@
 import React from 'react';
 import 'antd/dist/antd.css';
 import '../index.css';
-import { Layout, Breadcrumb, Typography, Row, Col, Tooltip, Select, Input, Upload, Button, notification, Collapse } from 'antd';
+import { Layout, Breadcrumb, Typography, Row, Col, Tooltip, Select, Input, Button, notification, Collapse } from 'antd';
 import 'antd/dist/antd.css';
 import HEADERVIEW from '../layout/headerview';
 import FOOTERVIEW from '../layout/footerview';
 import { CaretRightOutlined,CloudDownloadOutlined,SearchOutlined  } from '@ant-design/icons';
 import readXlsxFile from 'read-excel-file';
-import axios from 'axios';
+import ScaleLoader from "react-spinners/ScaleLoader";
+import Modal from 'react-modal';
 
 function CreateNew() 
 {
     const {Content} = Layout;
     const { Panel } = Collapse;
     const { Option } = Select;
-
+        
     var apiurl = localStorage.getItem('session_api');
     var username = localStorage.getItem('session_username');
     const [fabyyid] = React.useState(window.location.href.split('/').reverse()[0]);
@@ -28,9 +29,13 @@ function CreateNew()
 
     const [var_btngetbom, setvar_btngetbom] = React.useState(true);
     const [var_drpseason, setvar_drpseason] = React.useState(true);
+    const [isloading, setisloading] = React.useState(false);
 
     const [ds_seasonlist,setds_seasonlist] = React.useState([]);
     const [ds_bomlist,setds_bomlist] = React.useState([]);
+
+    const [ds_plm_bomfull,setds_plm_bomfull] = React.useState([]);
+    const [ds_plm_bomcolors,setds_plm_bomcolors] = React.useState([]);
 
     const [fileOLR, setFileOLR] = React.useState("");
     const [fileOLR_data, setFileOLR_data] = React.useState([]);
@@ -39,6 +44,23 @@ function CreateNew()
     const [var_plmsession, setvar_plmsession] = React.useState("");
     const [var_plmstyle, setvar_plmstyle] = React.useState("");
     const [var_plmsseason, setvar_plmsseason] = React.useState("");
+    const [var_plmrevbom, setvar_plmrevbom] = React.useState("");
+
+    const customStyles = {
+      content: {
+        top: '50%',
+        left: '50%',
+        right: 'auto',
+        width: '400px',
+        height: '170px',
+        bottom: 'auto',
+        textAlign: 'Center',
+        transform: 'translate(-50%, -50%)',
+        borderColor:'#9013FE',
+        borderWidth:'2px',
+        borderRadious: '5px'
+      },
+    };
     
     React.useEffect(()=>{
 
@@ -87,19 +109,10 @@ function CreateNew()
       });
 
     },[apiurl,username,fabyyid])
-
-      async function GetBom()
-      {
-        notification['error']({
-          message: 'Error',
-          description: 'PLM Style Data Not Found.',
-          style:{color: '#000',border: '1px solid #ff6961',backgroundColor: '#ffa39e'},
-        });
-        return;
-      }
-      
+ 
       async function handleUploadOLR(event) {
         
+        //setisloading(true);
          readXlsxFile(event.target.files[0]).then((rows) => {
             // `rows` is an array of rows
             // each row being an array of cells.
@@ -108,6 +121,8 @@ function CreateNew()
 
               if (rows[0][30] !== "MASTSTYLEDESC") 
               {
+                setisloading(false);
+
                 notification['error']({
                   message: 'Error',
                   description: 'This Excel File Not In Correct Format. MASTSTYLEDESC Can not Identifired.',
@@ -117,6 +132,8 @@ function CreateNew()
               }
               else if (rows[0][31] !== "CUSTSTYLE") 
               {
+                setisloading(false);
+
                 notification['error']({
                   message: 'Error',
                   description: 'This Excel File Not In Correct Format. CUSTSTYLE Can not Identifired.',
@@ -126,6 +143,8 @@ function CreateNew()
               }
               else if (rows[0][1] !== "CUSTNAME") 
               {
+                setisloading(false);
+
                 notification['error']({
                   message: 'Error',
                   description: 'This Excel File Not In Correct Format. CUSTNAME Can not Identifired.',
@@ -135,6 +154,8 @@ function CreateNew()
               }
               else if (rows[0][32] !== "CUSTSTYLEDESC") 
               {
+                setisloading(false);
+
                 notification['error']({
                   message: 'Error',
                   description: 'This Excel File Not In Correct Format. CUSTSTYLEDESC Can not Identifired.',
@@ -144,6 +165,8 @@ function CreateNew()
               }
               else if (rows[0][62] !== "SEASON") 
               {
+                setisloading(false);
+
                 notification['error']({
                   message: 'Error',
                   description: 'This Excel File Not In Correct Format. SEASON Can not Identifired.',
@@ -153,6 +176,8 @@ function CreateNew()
               }
               else if (rows[0][34] !== "MASTCOLORDESC") 
               {
+                setisloading(false);
+
                 notification['error']({
                   message: 'Error',
                   description: 'This Excel File Not In Correct Format. MASTCOLORDESC Can not Identifired.',
@@ -162,6 +187,8 @@ function CreateNew()
               }
               else if (rows[0][40] !== "CUSTSIZEDESC") 
               {
+                setisloading(false);
+
                 notification['error']({
                   message: 'Error',
                   description: 'This Excel File Not In Correct Format. CUSTSIZEDESC Can not Identifired.',
@@ -171,6 +198,8 @@ function CreateNew()
               }
               else if (rows[0][41] !== "ORDERQTY") 
               {
+                setisloading(false);
+
                 notification['error']({
                   message: 'Error',
                   description: 'This Excel File Not In Correct Format. ORDERQTY Can not Identifired.',
@@ -208,30 +237,36 @@ function CreateNew()
           
                     if(response.Type === "SUCCESS")
                     {
+                      setisloading(false);
+ 
                       notification['success']({
                         message: 'Data Success',
                         description: response.Msg,
                         style:{color: '#000',border: '1px solid #2ecc71',backgroundColor: '#d5f5e3'},
-                      });
+                      }); 
                     }
                     else
                     {
+                      setisloading(false);
+
                         notification['error']({
                             message: 'Data Error',
                             description: response.Msg,
                             style:{color: '#000',border: '1px solid #ff6961',backgroundColor: '#ffa39e'},
                           });
+ 
                     }
           
                      
                 })
                 .catch(error => {
-          
+                  setisloading(false);
+
                     notification['error']({
                         message: 'Data Error',
                         description: error,
                         style:{color: '#000',border: '1px solid #ff6961',backgroundColor: '#ffa39e'},
-                      });
+                      }); 
           
                 });
 
@@ -251,6 +286,10 @@ function CreateNew()
       async function getPLMSeasonList()
       {
         setvar_drpseason(true);
+        setisloading(true);
+
+        setds_seasonlist([]);
+        setds_bomlist([]);
 
         await fetch(`${apiurl}/plmaccess/plmsession`)
         .then(res => res.json())
@@ -275,17 +314,19 @@ function CreateNew()
                   if(response_1.Type === "SUCCESS")
                   {
                       setds_seasonlist(response_1.Dataset);
-
+                      setvar_drpseason(false);
+                      setisloading(false);
                       notification['success']({
                         message: 'Success Notification',
                         description:`${response_1.Dataset.length} No of Seasons are loading.` ,
                         style:{color: '#000',border: '1px solid #ccffcc',backgroundColor: '#99ff66'},
                       });
 
-                      setvar_drpseason(false);
+                      
                   }
                   else
                   {
+                    setisloading(false);
                       notification['error']({
                           message: 'Data Error',
                           description: 'Data Loading Error.',
@@ -296,7 +337,7 @@ function CreateNew()
                   
               })
               .catch(error_1 => {
-    
+                setisloading(false);
                   notification['error']({
                       message: 'Data Error',
                       description: error_1,
@@ -308,6 +349,7 @@ function CreateNew()
             }
             else
             {
+              setisloading(false);
                 notification['error']({
                     message: 'Data Error',
                     description: 'Can not Access PLM Using API (Token Error).',
@@ -318,7 +360,7 @@ function CreateNew()
             
         })
         .catch(error => {
-
+          setisloading(false);
             notification['error']({
                 message: 'Data Error',
                 description: error,
@@ -328,10 +370,14 @@ function CreateNew()
         });
 
         
+        
       }
 
       async function handleChangeSeason(value) {
+        
         setvar_plmsseason(value);
+        setisloading(true);
+        setds_bomlist([]);
 
         const sendOptions = {
           method: 'post',
@@ -348,7 +394,7 @@ function CreateNew()
             if(response.Type === "SUCCESS")
             {
               setds_bomlist(response.Dataset);
-
+              setisloading(false);
               notification['success']({
                 message: 'Success Notification',
                 description:`${response.Dataset.length} No of Bom Versions are loading.` ,
@@ -357,6 +403,7 @@ function CreateNew()
             }
             else
             {
+              setisloading(false);
                 notification['error']({
                     message: 'Data Error',
                     description: 'Can not Access PLM.',
@@ -367,7 +414,7 @@ function CreateNew()
             
         })
         .catch(error => {
-
+          setisloading(false);
             notification['error']({
                 message: 'Data Error',
                 description: error,
@@ -375,6 +422,148 @@ function CreateNew()
               });
 
         });
+        
+      }
+
+      function handleChangeBom(value) 
+      {
+        setvar_btngetbom(false);
+        setvar_plmrevbom(value);
+      }
+
+      async function GetBom()
+      {
+        if(var_plmrevbom === "")
+        {
+          notification['error']({
+            message: 'Error',
+            description: 'PLM Revise BOM is Not Found.',
+            style:{color: '#000',border: '1px solid #ff6961',backgroundColor: '#ffa39e'},
+          });
+          return;
+        }
+        else
+        {
+          setisloading(true);
+
+          const sendOptions_1 = {
+            method: 'post',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                "revbomid" : var_plmrevbom , 
+                "token" : var_plmsession})
+          };
+
+          await fetch(`${apiurl}/plmaccess/plmbomdata`,sendOptions_1)
+          .then(res_1 => res_1.json())
+          .then(response_1 => { 
+
+              if(response_1.Type === "SUCCESS")
+              {
+                  setds_plm_bomfull(response_1.Dataset);
+                  setds_plm_bomcolors(response_1.colorways);
+
+                  const sendOptions_2 = {
+                    method: 'post',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        "itemlistids" : response_1.Dataset.items , 
+                        "token" : var_plmsession})
+                  };
+                  
+                  fetch(`${apiurl}/plmaccess/getbomitems`,sendOptions_2)
+                  .then(res_2 => res_2.json())
+                  .then(response_2 =>
+                    {
+                      if(response_2.Type === "SUCCESS")
+                      {
+                        notification['success']({
+                          message: 'Success Notification',
+                          description:`BOM Items Loading Completed.` ,
+                          style:{color: '#000',border: '1px solid #ccffcc',backgroundColor: '#99ff66'},
+                        });
+
+                        const sendOptions_3 = {
+                          method: 'post',
+                          headers: { 'Content-Type': 'application/json' },
+                          body: JSON.stringify({
+                              "fabric_yyid" : fabyyid , 
+                              "colorset" : response_1.colorways})
+                        };
+                        
+                        fetch(`${apiurl}/fabricyy/addplmcolordata`,sendOptions_3)
+                        .then(res_3 => res_3.json())
+                        .then(response_3 => 
+                          {
+                            if(response_3.Type === "SUCCESS")
+                            {
+                              notification['success']({
+                                message: 'Success Notification',
+                                description:`Data Sync Completed.` ,
+                                style:{color: '#000',border: '1px solid #ccffcc',backgroundColor: '#99ff66'},
+                              });
+                              
+
+                              const sendOptions_4 = {
+                                method: 'post',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({
+                                    "fabric_yyid" : fabyyid , 
+                                    "itemset" : response_2.Dataset,
+                                    "token":var_plmsession})
+                              };
+                              
+                              fetch(`${apiurl}/fabricyy/addplmitemdata`,sendOptions_4)
+                              .then(res_4 => res_4.json())
+                              .then(response_4 => 
+                                {
+                                  if(response_4.Type === "SUCCESS")
+                                  {
+                                    notification['success']({
+                                      message: 'Success Notification',
+                                      description:response_4.Message ,
+                                      style:{color: '#000',border: '1px solid #ccffcc',backgroundColor: '#99ff66'},
+                                    });
+                                    setisloading(false);
+                                    
+                                  }
+                                })
+            
+                              
+                            }
+                          })
+      
+                        
+                      }
+                    })
+
+                  
+                  
+                  
+              }
+              else
+              {
+                setisloading(false);
+                  notification['error']({
+                      message: 'Data Error',
+                      description: 'Data Loading Error.',
+                      style:{color: '#000',border: '1px solid #ff6961',backgroundColor: '#ffa39e'},
+                    });
+              }
+
+              
+          })
+          .catch(error_1 => {
+            setisloading(false);
+              notification['error']({
+                  message: 'Data Error',
+                  description: error_1,
+                  style:{color: '#000',border: '1px solid #ff6961',backgroundColor: '#ffa39e'},
+                });
+
+          }); 
+        }
+
         
       }
 
@@ -431,6 +620,13 @@ function CreateNew()
           </Row>
           <Row>
             <Col span={6}>
+
+            <Modal isOpen={isloading} style={customStyles} contentLabel="Example Modal">
+              <ScaleLoader color={'#9013FE'} loading={true} height={55} width={6} radius={10} margin={8}/>
+              <br/>
+              <p style={{color:"#9013FE"}}>Please Wait......</p>
+            </Modal>
+
               <p style={{color:"red"}}>** Click Here To Upload OLR File</p>
 
               <div id="upload-box">
@@ -439,6 +635,7 @@ function CreateNew()
               </div>
 
               <hr/>
+
               <p style={{color:"red"}}>** Click Here To Get PLM BOM Data</p>
               <p style={{color:"purple"}}>PLM Style Number</p>
               <Input onChange={plmstyleonchange} type="text" style={{width:"80%"}}/>
@@ -456,18 +653,20 @@ function CreateNew()
 
               <p style={{color:"purple"}}>Select Bom version</p>
 
-              <Select style={{ width:"100%" }}>
+              <Select style={{ width:"100%" }} disabled={var_drpseason} onChange={handleChangeBom}>
               {
-                ds_bomlist.map((row) => <Option value={row.id}>{row.node_name}</Option>)
-              }
-                
+                ds_bomlist.map((row) => <Option value={row.latest_revision}>{row.node_name}</Option>)
+              } 
               </Select>
 
               <Button onClick={GetBom} type="primary" icon={<CloudDownloadOutlined />} disabled={var_btngetbom}> Get PLM BOMs </Button>
-
+               
             </Col>
             <Col span={18}></Col>
           </Row>
+          
+          
+
         </div>
       </Content>
       <FOOTERVIEW/>
