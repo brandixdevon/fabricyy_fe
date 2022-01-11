@@ -107,7 +107,7 @@ function CreateNew()
                     {
                         notification['success']({
                             message: 'Success Notification',
-                            description:data.Msg,
+                            description: data.Msg,
                             style:{color: '#000',border: '1px solid #ccffcc',backgroundColor: '#99ff66'},
                           });
 
@@ -178,7 +178,6 @@ function CreateNew()
   
             if(response.Type === "SUCCESS")
             {
-              //alert(JSON.stringify(response.Data));
               setds_factory(response.Data);
             }
             else
@@ -210,15 +209,15 @@ function CreateNew()
       <Content style={{ margin: '0 16px'}}>
         <Breadcrumb style={{ margin: '16px 0' }}>
           <Breadcrumb.Item>FAB YY</Breadcrumb.Item>
-          <Breadcrumb.Item>Create New Fabric YY Project</Breadcrumb.Item>
+          <Breadcrumb.Item>Create New Fabric YY Request</Breadcrumb.Item>
         </Breadcrumb>
         <div className="site-layout-background" style={{ padding: 24, minHeight: 360 }}>
           <Row>
             <Col span={12}>
-            <Typography.Title level={4}>Create New Fabric YY Project</Typography.Title>
+            <Typography.Title level={4}>Create New Fabric YY Request</Typography.Title>
             <Typography.Text type="danger">** Required Field</Typography.Text>
             <br/><br/>
-            <Typography.Text type="info">1. Select Your Buyer Category **</Typography.Text><br/>
+            <Typography.Text type="info">1. Select Buyer Category **</Typography.Text><br/>
             <Select style={{ width: 120 }} onChange={handleChangeCategory}>
               {ds_customer.map((row) => (
                   <Select.Option value={row.cus_id}>{row.cus_name}</Select.Option>
@@ -230,7 +229,7 @@ function CreateNew()
             <Input placeholder="OLR Style No" maxLength={12} onChange={onChangeStyleNo}/>
             <br/><br/>
 
-            <Typography.Text type="info">3. Customer M3 Style No **</Typography.Text><br/>
+            <Typography.Text type="info">3. M3 Style No **</Typography.Text><br/>
             <Input placeholder="M3 Style No" maxLength={12} onChange={onChangeM3StyleNo}/>
             <br/><br/>
 
