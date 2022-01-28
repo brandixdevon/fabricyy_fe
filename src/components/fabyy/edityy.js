@@ -6,12 +6,12 @@ import 'antd/dist/antd.css';
 import HEADERVIEW from '../layout/headerview';
 import FOOTERVIEW from '../layout/footerview';
 import { CaretRightOutlined,CloudDownloadOutlined,SearchOutlined,CalendarTwoTone,EditTwoTone,SaveFilled  } from '@ant-design/icons';
-import readXlsxFile from 'read-excel-file';
 import ScaleLoader from "react-spinners/ScaleLoader";
 import Modal from 'react-modal';
 import moment from 'moment';
 import * as Excel from "exceljs";
 import saveAs from "file-saver";
+import XLSX from 'xlsx';
 
 function CreateNew() 
 {
@@ -48,6 +48,7 @@ function CreateNew()
     const [isOpenOrder4, setisOpenOrder4] = React.useState(false);
     const [isOpenBomItem, setisOpenBomItem] = React.useState(false);
     const [isOpenSizeItem, setisOpenSizeItem] = React.useState(false);
+    const [isOpenPlmColorways, setisOpenPlmColorways] = React.useState(false);
 
     const [sel_Size_Id, setsel_Size_Id] = React.useState("");
     const [sel_Size_Gmtway, setsel_Size_Gmtway] = React.useState("");
@@ -86,6 +87,7 @@ function CreateNew()
 
     const [ds_seasonlist,setds_seasonlist] = React.useState([]);
     const [ds_bomlist,setds_bomlist] = React.useState([]);
+    const [ds_plmcolorways,setds_plmcolorways] = React.useState([]);
 
     const [ds_plm_bomfull,setds_plm_bomfull] = React.useState([]);
     const [ds_factory,setds_factory] = React.useState([]);
@@ -93,8 +95,6 @@ function CreateNew()
     const [ds_olr_colorset,setds_olr_colorset] = React.useState([]);
     const [ds_olr_sizeset,setds_olr_sizeset] = React.useState([]);
     const [ds_olr_sizelength,setds_olr_sizelength] = React.useState(0);
-
-    const [fileOLR, setFileOLR] = React.useState("");
 
     const [var_plmsession, setvar_plmsession] = React.useState("");
     const [var_plmstyle, setvar_plmstyle] = React.useState("");
@@ -180,6 +180,17 @@ function CreateNew()
           if(response_5.Type === "SUCCESS")
           {
             setds_plm_bomfull(response_5.Data);
+            
+          }
+        })
+
+        fetch(`${apiurl}/fabricyy/getplmcolorways/${fabyyid}`)
+      .then(res_plmcolor => res_plmcolor.json())
+      .then(response_plmcolor => 
+        {
+          if(response_plmcolor.Type === "SUCCESS")
+          {
+            setds_plmcolorways(response_plmcolor.Data);
             
           }
         })
@@ -294,15 +305,88 @@ function CreateNew()
     }
  
       async function handleUploadOLR(event) {
-        
+
+        const file = event.target.files[0];
+        const data = await file.arrayBuffer();
+        const workbook_1 = XLSX.read(data);
+
+        var first_sheet_name = workbook_1.SheetNames[0];
+        /* Get worksheet */
+        var worksheet = workbook_1.Sheets[first_sheet_name];
+
+        const excelProducts =   XLSX.utils.sheet_to_json(worksheet, {
+          //raw: false,
+          //header: 1,
+          //dateNF: 'yyyy-mm-dd',
+          blankrows: false,
+         })
+
+         const ExcelToJSON = JSON.stringify(excelProducts);
+
+        //alert(ToJSON);
+
+        //JSON.parse(ExcelToJSON).map(item =>
+          //{
+            
+            //return alert(item.Customer);
+          //})
+
+
+
+        /* Find desired cells */
+        var customer_cell = worksheet["B1"];
+        var vpono_cell = worksheet["T1"];
+        var techpackno_cell = worksheet["AC1"];
+        var masterstyledesc_cell = worksheet["AE1"];
+        var custstyle_cell = worksheet["AF1"];
+        var custstyledesc_cell = worksheet["AG1"];
+        var season_cell = worksheet["BK1"];
+        var mastcolordesc_cell = worksheet["AI1"];
+        var custsizedesc_cell = worksheet["AO1"];
+        var orderqty_cell = worksheet["AP1"];
+
+ 
         setisloading(true);
-         readXlsxFile(event.target.files[0]).then((rows) => {
+        
             // `rows` is an array of rows
             // each row being an array of cells.
 
             let OLRITEMS = [];
 
-              if (rows[0][30] !== "MASTSTYLEDESC") 
+            if ((customer_cell ? customer_cell.v : undefined) !== "CUSTNAME") 
+            {
+              setisloading(false);
+
+              notification['error']({
+                message: 'Error',
+                description: 'This Excel File Not In Correct Format. CUSTNAME Can not Identifired.',
+                style:{color: '#000',border: '1px solid #ff6961',backgroundColor: '#ffa39e'},
+              });
+              return;
+            }
+            else if ((vpono_cell ? vpono_cell.v : undefined) !== "VPONO") 
+            {
+              setisloading(false);
+
+              notification['error']({
+                message: 'Error',
+                description: 'This Excel File Not In Correct Format. VPONO Can not Identifired.',
+                style:{color: '#000',border: '1px solid #ff6961',backgroundColor: '#ffa39e'},
+              });
+              return;
+            }
+            else if ((techpackno_cell ? techpackno_cell.v : undefined) !== "TECHPACKNO") 
+            {
+              setisloading(false);
+
+              notification['error']({
+                message: 'Error',
+                description: 'This Excel File Not In Correct Format. TECHPACKNO Can not Identifired.',
+                style:{color: '#000',border: '1px solid #ff6961',backgroundColor: '#ffa39e'},
+              });
+              return;
+            }
+            else if ((masterstyledesc_cell ? masterstyledesc_cell.v : undefined) !== "MASTSTYLEDESC") 
               {
                 setisloading(false);
 
@@ -312,238 +396,226 @@ function CreateNew()
                   style:{color: '#000',border: '1px solid #ff6961',backgroundColor: '#ffa39e'},
                 });
                 return;
-              }
-              else if (rows[0][31] !== "CUSTSTYLE") 
-              {
-                setisloading(false);
+            }
+            else if ((custstyle_cell ? custstyle_cell.v : undefined) !== "CUSTSTYLE") 
+            {
+              setisloading(false);
 
-                notification['error']({
-                  message: 'Error',
-                  description: 'This Excel File Not In Correct Format. CUSTSTYLE Can not Identifired.',
-                  style:{color: '#000',border: '1px solid #ff6961',backgroundColor: '#ffa39e'},
-                });
-                return;
-              }
-              else if (rows[0][1] !== "CUSTNAME") 
-              {
-                setisloading(false);
+              notification['error']({
+                message: 'Error',
+                description: 'This Excel File Not In Correct Format. CUSTSTYLE Can not Identifired.',
+                style:{color: '#000',border: '1px solid #ff6961',backgroundColor: '#ffa39e'},
+              });
+              return;
+            } 
+            else if ((custstyledesc_cell ? custstyledesc_cell.v : undefined) !== "CUSTSTYLEDESC") 
+            {
+              setisloading(false);
 
-                notification['error']({
-                  message: 'Error',
-                  description: 'This Excel File Not In Correct Format. CUSTNAME Can not Identifired.',
-                  style:{color: '#000',border: '1px solid #ff6961',backgroundColor: '#ffa39e'},
-                });
-                return;
-              }
-              else if (rows[0][32] !== "CUSTSTYLEDESC") 
-              {
-                setisloading(false);
+              notification['error']({
+                message: 'Error',
+                description: 'This Excel File Not In Correct Format. CUSTSTYLEDESC Can not Identifired.',
+                style:{color: '#000',border: '1px solid #ff6961',backgroundColor: '#ffa39e'},
+              });
+              return;
+            }
+            else if ((season_cell ? season_cell.v : undefined) !== "SEASON") 
+            {
+              setisloading(false);
 
-                notification['error']({
-                  message: 'Error',
-                  description: 'This Excel File Not In Correct Format. CUSTSTYLEDESC Can not Identifired.',
-                  style:{color: '#000',border: '1px solid #ff6961',backgroundColor: '#ffa39e'},
-                });
-                return;
-              }
-              else if (rows[0][62] !== "SEASON") 
-              {
-                setisloading(false);
+              notification['error']({
+                message: 'Error',
+                description: 'This Excel File Not In Correct Format. SEASON Can not Identifired.',
+                style:{color: '#000',border: '1px solid #ff6961',backgroundColor: '#ffa39e'},
+              });
+              return;
+            }
+            else if ((mastcolordesc_cell ? mastcolordesc_cell.v : undefined) !== "MASTCOLORDESC") 
+            {
+              setisloading(false);
 
-                notification['error']({
-                  message: 'Error',
-                  description: 'This Excel File Not In Correct Format. SEASON Can not Identifired.',
-                  style:{color: '#000',border: '1px solid #ff6961',backgroundColor: '#ffa39e'},
-                });
-                return;
-              }
-              else if (rows[0][34] !== "MASTCOLORDESC") 
-              {
-                setisloading(false);
+              notification['error']({
+                message: 'Error',
+                description: 'This Excel File Not In Correct Format. MASTCOLORDESC Can not Identifired.',
+                style:{color: '#000',border: '1px solid #ff6961',backgroundColor: '#ffa39e'},
+              });
+              return;
+            }
+            else if ((custsizedesc_cell ? custsizedesc_cell.v : undefined) !== "CUSTSIZEDESC") 
+            {
+              setisloading(false);
 
-                notification['error']({
-                  message: 'Error',
-                  description: 'This Excel File Not In Correct Format. MASTCOLORDESC Can not Identifired.',
-                  style:{color: '#000',border: '1px solid #ff6961',backgroundColor: '#ffa39e'},
-                });
-                return;
-              }
-              else if (rows[0][40] !== "CUSTSIZEDESC") 
-              {
-                setisloading(false);
+              notification['error']({
+                message: 'Error',
+                description: 'This Excel File Not In Correct Format. CUSTSIZEDESC Can not Identifired.',
+                style:{color: '#000',border: '1px solid #ff6961',backgroundColor: '#ffa39e'},
+              });
+              return;
+            }
+            else if ((orderqty_cell ? orderqty_cell.v : undefined) !== "ORDERQTY") 
+            {
+              setisloading(false);
 
-                notification['error']({
-                  message: 'Error',
-                  description: 'This Excel File Not In Correct Format. CUSTSIZEDESC Can not Identifired.',
-                  style:{color: '#000',border: '1px solid #ff6961',backgroundColor: '#ffa39e'},
-                });
-                return;
-              }
-              else if (rows[0][41] !== "ORDERQTY") 
-              {
-                setisloading(false);
-
-                notification['error']({
-                  message: 'Error',
-                  description: 'This Excel File Not In Correct Format. ORDERQTY Can not Identifired.',
-                  style:{color: '#000',border: '1px solid #ff6961',backgroundColor: '#ffa39e'},
-                });
-                return;
-              }
-              else
-              {
-                
-                // eslint-disable-next-line
-                rows.map((items => {
-                  
-                  if(String(items[31]).toLowerCase() === String(var_styleno).toLowerCase() && String(items[1]).toUpperCase() !== "CUSTNAME")
-                  {
-                    OLRITEMS.push({CUSTNAME: items[1],MASTSTYLEDESC: items[30],CUSTSTYLE: items[31],CUSTSTYLEDESC: items[32],MASTCOLORDESC: items[34],CUSTSIZEDESC: items[40],ORDERQTY: items[41],SEASON: items[62]})
-                   
-                  }
-
-                }))
-
-             
-                const sendOptions = {
-                  method: 'post',
-                  headers: { 'Content-Type': 'application/json' },
-                  body: JSON.stringify({
-                      "fabyyid" : fabyyid , 
-                      "olrdata" : OLRITEMS
-                  })
-                };
+              notification['error']({
+                message: 'Error',
+                description: 'This Excel File Not In Correct Format. ORDERQTY Can not Identifired.',
+                style:{color: '#000',border: '1px solid #ff6961',backgroundColor: '#ffa39e'},
+              });
+              return;
+            }
+            else
+            {
               
-                fetch(`${apiurl}/fabricyy/uploadolr`,sendOptions)
-                .then(res => res.json())
-                .then(response => { 
-          
-                    if(response.Type === "SUCCESS")
-                    {
-                     
-                      fetch(`${apiurl}/fabricyy/olritemprocess/${fabyyid}`)
-                      .then(res_1 => res_1.json())
-                      .then(response_1 => { 
-                
-                          if(response_1.Type === "SUCCESS")
-                          {
-                            fetch(`${apiurl}/fabricyy/olrlineprocess/${fabyyid}`)
-                            .then(res_2 => res_2.json())
-                            .then(response_2 => { 
-                      
-                                if(response_2.Type === "SUCCESS")
-                                {
-                                    fetch(`${apiurl}/fabricyy/getolrsizes/${fabyyid}`)
-                                    .then(res_3 => res_3.json())
-                                    .then(response_3 => { 
-                              
-                                        if(response_3.Type === "SUCCESS")
-                                        {
-                                          setds_olr_sizeset(response_3.Data);
-                                          setds_olr_sizelength(response_3.Data.length);
 
-                                            fetch(`${apiurl}/fabricyy/getolrdata/${fabyyid}`)
-                                            .then(res_4 => res_4.json())
-                                            .then(response_4 => { 
-                                      
-                                                if(response_4.Type === "SUCCESS")
-                                                {
-                                                  setds_olr_colorset(response_4.Data);
+                JSON.parse(ExcelToJSON).map(item =>
+                {
+                  if(String(item.TECHPACKNO).toLowerCase() === String(var_styleno).toLowerCase())
+                  {
+                    OLRITEMS.push({CUSTNAME: item.CUSTNAME,VPONO: item.VPONO,TECHPACKNO: item.TECHPACKNO,MASTSTYLEDESC: item.MASTSTYLEDESC,CUSTSTYLE: item.CUSTSTYLE,CUSTSTYLEDESC: item.CUSTSTYLEDESC,MASTCOLORDESC: item.MASTCOLORDESC,CUSTSIZEDESC: item.CUSTSIZEDESC,ORDERQTY: item.ORDERQTY,SEASON: item.SEASON})
+                    
+                  }
+                  return null;
+                  
+                })
 
-                                                    setisloading(false);
+            
+              const sendOptions = {
+                method: 'post',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    "fabyyid" : fabyyid , 
+                    "olrdata" : OLRITEMS
+                })
+              };
+            
+              fetch(`${apiurl}/fabricyy/uploadolr`,sendOptions)
+              .then(res => res.json())
+              .then(response => { 
+        
+                  if(response.Type === "SUCCESS")
+                  {
+                    
+                    fetch(`${apiurl}/fabricyy/olritemprocess/${fabyyid}`)
+                    .then(res_1 => res_1.json())
+                    .then(response_1 => { 
+              
+                        if(response_1.Type === "SUCCESS")
+                        {
+                          fetch(`${apiurl}/fabricyy/olrlineprocess/${fabyyid}`)
+                          .then(res_2 => res_2.json())
+                          .then(response_2 => { 
+                    
+                              if(response_2.Type === "SUCCESS")
+                              {
+                                  fetch(`${apiurl}/fabricyy/getolrsizes/${fabyyid}`)
+                                  .then(res_3 => res_3.json())
+                                  .then(response_3 => { 
+                            
+                                      if(response_3.Type === "SUCCESS")
+                                      {
+                                        setds_olr_sizeset(response_3.Data);
+                                        setds_olr_sizelength(response_3.Data.length);
 
-                                                    RefreshHeaders();
-                                                    
-                                                    notification['success']({
-                                                      message: 'Data Success',
-                                                      description: 'OLR Data Processing Completed.',
-                                                      style:{color: '#000',border: '1px solid #2ecc71',backgroundColor: '#d5f5e3'},
-                                                    }); 
-                                                }
-                                                else
-                                                {
+                                          fetch(`${apiurl}/fabricyy/getolrdata/${fabyyid}`)
+                                          .then(res_4 => res_4.json())
+                                          .then(response_4 => { 
+                                    
+                                              if(response_4.Type === "SUCCESS")
+                                              {
+                                                setds_olr_colorset(response_4.Data);
+
                                                   setisloading(false);
 
-                                                    notification['error']({
-                                                        message: 'Data Error',
-                                                        description: "Error in OLR Data Processing",
-                                                        style:{color: '#000',border: '1px solid #ff6961',backgroundColor: '#ffa39e'},
-                                                      });
-                            
-                                                }
-                                            })
+                                                  RefreshHeaders();
+                                                  
+                                                  notification['success']({
+                                                    message: 'Data Success',
+                                                    description: 'OLR Data Processing Completed.',
+                                                    style:{color: '#000',border: '1px solid #2ecc71',backgroundColor: '#d5f5e3'},
+                                                  }); 
+                                              }
+                                              else
+                                              {
+                                                setisloading(false);
 
-                                        }
-                                        else
-                                        {
-                                          setisloading(false);
+                                                  notification['error']({
+                                                      message: 'Data Error',
+                                                      description: "Error in OLR Data Processing",
+                                                      style:{color: '#000',border: '1px solid #ff6961',backgroundColor: '#ffa39e'},
+                                                    });
+                          
+                                              }
+                                          })
 
-                                            notification['error']({
-                                                message: 'Data Error',
-                                                description: "Error in OLR Data Processing",
-                                                style:{color: '#000',border: '1px solid #ff6961',backgroundColor: '#ffa39e'},
-                                              });
+                                      }
+                                      else
+                                      {
+                                        setisloading(false);
+
+                                          notification['error']({
+                                              message: 'Data Error',
+                                              description: "Error in OLR Data Processing",
+                                              style:{color: '#000',border: '1px solid #ff6961',backgroundColor: '#ffa39e'},
+                                            });
+                  
+                                      }
+                                  })
+
+                              }
+                              else
+                              {
+                                setisloading(false);
+
+                                  notification['error']({
+                                      message: 'Data Error',
+                                      description: "Error in OLR Data Processing",
+                                      style:{color: '#000',border: '1px solid #ff6961',backgroundColor: '#ffa39e'},
+                                    });
+          
+                              }
+                          })
+
+                        }
+                        else
+                        {
+                          setisloading(false);
+
+                            notification['error']({
+                                message: 'Data Error',
+                                description: "Error in OLR Data Processing",
+                                style:{color: '#000',border: '1px solid #ff6961',backgroundColor: '#ffa39e'},
+                              });
+    
+                        }
+                    })
+
+                  }
+                  else
+                  {
+                    setisloading(false);
+
+                      notification['error']({
+                          message: 'Data Error',
+                          description: response.Msg,
+                          style:{color: '#000',border: '1px solid #ff6961',backgroundColor: '#ffa39e'},
+                        });
+
+                  }
+        
                     
-                                        }
-                                    })
+              })
+              .catch(error => {
+                setisloading(false);
 
-                                }
-                                else
-                                {
-                                  setisloading(false);
+                  notification['error']({
+                      message: 'Data Error',
+                      description: error,
+                      style:{color: '#000',border: '1px solid #ff6961',backgroundColor: '#ffa39e'},
+                    }); 
+        
+              });
 
-                                    notification['error']({
-                                        message: 'Data Error',
-                                        description: "Error in OLR Data Processing",
-                                        style:{color: '#000',border: '1px solid #ff6961',backgroundColor: '#ffa39e'},
-                                      });
-            
-                                }
-                            })
-
-                          }
-                          else
-                          {
-                            setisloading(false);
-
-                              notification['error']({
-                                  message: 'Data Error',
-                                  description: "Error in OLR Data Processing",
-                                  style:{color: '#000',border: '1px solid #ff6961',backgroundColor: '#ffa39e'},
-                                });
-      
-                          }
-                      })
-
-                    }
-                    else
-                    {
-                      setisloading(false);
-
-                        notification['error']({
-                            message: 'Data Error',
-                            description: response.Msg,
-                            style:{color: '#000',border: '1px solid #ff6961',backgroundColor: '#ffa39e'},
-                          });
- 
-                    }
-          
-                     
-                })
-                .catch(error => {
-                  setisloading(false);
-
-                    notification['error']({
-                        message: 'Data Error',
-                        description: error,
-                        style:{color: '#000',border: '1px solid #ff6961',backgroundColor: '#ffa39e'},
-                      }); 
-          
-                });
-
-              }
-
-          })
+            }
 
 
       }
@@ -1462,6 +1534,7 @@ function CreateNew()
               <td>{rowvalue.plm_colorway_type}</td>
               <td>{rowvalue.plm_cw}</td>
               <td>{rowvalue.plm_placement}</td>
+              <td>{rowvalue.cw_name}</td>
               <td>{rowvalue.plm_color}</td>
               <td><EditTwoTone onClick={() => GetBomItemforEdit(rowvalue.item_id)} style={{fontSize:"20px",cursor:"pointer"}} twoToneColor="#FFBF00" /></td>
               <td>{rowvalue.item_price}</td>
@@ -1490,6 +1563,7 @@ function CreateNew()
               <td>{row_value.garmentway}</td>
               <td>{row_value.color}</td>
               <td>{row_value.flex}</td>
+              <td>{row_value.vpono}</td>
               {indents.map((row_tb) =><td>{row_tb}</td>)}
               <td>{row_value.sub_total}</td>
               <td>{row_value.prod_plant}</td>
@@ -1514,6 +1588,7 @@ function CreateNew()
           <th style={{width:"150px",borderStyle:"solid",borderWidth:"1px"}}>GARMENT WAY</th>
           <th style={{width:"150px",borderStyle:"solid",borderWidth:"1px"}}>COLOR</th>
           <th style={{width:"50px",borderStyle:"solid",borderWidth:"1px"}}>FLEX</th>
+          <th style={{width:"50px",borderStyle:"solid",borderWidth:"1px"}}>VPO</th>
           {
             ds_olr_sizeset.map((row_tb) =><th style={{width:"75px",borderStyle:"solid",borderWidth:"1px"}}>{row_tb.sizename}</th>)
           }
@@ -1853,7 +1928,7 @@ function CreateNew()
                   "token" : var_plmsession})
             };
   
-            let first = await fetch(`${apiurl}/plmaccess/plmbomdata`,sendOptions_1)
+            await fetch(`${apiurl}/plmaccess/plmbomdata`,sendOptions_1)
             .then(res_1 => res_1.json())
             .then(response_1 => { 
   
@@ -1905,6 +1980,17 @@ function CreateNew()
                                   {
                                     if(response_4.Type === "SUCCESS")
                                     {
+
+                                      fetch(`${apiurl}/fabricyy/getplmcolorways/${fabyyid}`)
+                                      .then(res_plmcolor => res_plmcolor.json())
+                                      .then(response_plmcolor => 
+                                        {
+                                          if(response_plmcolor.Type === "SUCCESS")
+                                          {
+                                            setds_plmcolorways(response_plmcolor.Data);
+                                            
+                                          }
+                                        })
 
                                       const sendOptions_plmtoyy = {
                                         method: 'post',
@@ -2577,8 +2663,8 @@ function CreateNew()
                     <p style={{color:"red"}}>** Click Here To Upload OLR File</p>
 
                     <div id="upload-box">
-                      <Input type="file" onChange={handleUploadOLR} accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"/>
-                      <p><b>Filename:</b> {fileOLR.name}</p>
+                      <Input type="file" onChange={handleUploadOLR} accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"/>
+                      <p><b>Filename:</b></p>
                     </div>
 
                   </Col>
@@ -2645,7 +2731,8 @@ function CreateNew()
             <table style={{marginLeft:"5px"}}>
               <thead style={{fontSize:"10px",textAlign:"center"}}>
                 <tr>
-                  <th colSpan={9}></th>
+                  <th colSpan={5}></th>
+                  <th colSpan={4}><Button type="primary" onClick={()=>setisOpenPlmColorways(true)}>PLM GARMENT COLORWAYS</Button></th>
                   <th style={{width:"5%",fontSize:"20px"}}><CalendarTwoTone onClick={()=> setisOpenOrder1(true)} style={{cursor:"pointer"}} twoToneColor="#eb2f96" /></th>
                   <th style={{width:"5%",fontSize:"20px"}}><CalendarTwoTone onClick={()=> setisOpenOrder2(true)} style={{cursor:"pointer"}}  twoToneColor="#eb2f96" /></th>
                   <th style={{width:"5%",fontSize:"20px"}}><CalendarTwoTone onClick={()=> setisOpenOrder3(true)} style={{cursor:"pointer"}}  twoToneColor="#eb2f96" /></th>
@@ -2653,12 +2740,13 @@ function CreateNew()
                 </tr>
                 <tr>
                   <th style={{width:"10%",borderStyle:"solid",borderWidth:"1px"}}>FABRIC DESCRIPTION</th>
-                  <th style={{width:"10%",borderStyle:"solid",borderWidth:"1px"}}>SPECIAL COMMENTS</th>
+                  <th style={{width:"5%",borderStyle:"solid",borderWidth:"1px"}}>SPECIAL COMMENTS</th>
                   <th style={{width:"10%",borderStyle:"solid",borderWidth:"1px"}}>SUPPLIER</th>
                   <th style={{width:"5%",borderStyle:"solid",borderWidth:"1px"}}>FABRIC TYPE</th>
                   <th style={{width:"5%",borderStyle:"solid",borderWidth:"1px"}}>CUTTABLE WIDTH (INCHES)</th>
                   <th style={{width:"10%",borderStyle:"solid",borderWidth:"1px"}}>BODY PART / PLACEMENT</th>
-                  <th style={{width:"10%",borderStyle:"solid",borderWidth:"1px"}}>COLOR CODE</th>
+                  <th style={{width:"7%",borderStyle:"solid",borderWidth:"1px"}}>GMT. COLOR</th>
+                  <th style={{width:"5%",borderStyle:"solid",borderWidth:"1px"}}>COLOR CODE</th>
                   <th style={{width:"3%",borderStyle:"solid",borderWidth:"1px"}}>#EDIT</th>
                   <th style={{width:"5%",borderStyle:"solid",borderWidth:"1px"}}>PRICE</th>
                   <th style={{width:"5%",borderStyle:"solid",borderWidth:"1px"}}>ORDERING</th>
@@ -2675,6 +2763,15 @@ function CreateNew()
             </table>
             <p style={{color:"purple",paddingLeft:"5px"}}>{ds_plm_bomfull.length.toString()} Items in PLM Bom</p>
             </Col>
+
+            <AntdDModal visible={isOpenPlmColorways} title="PLM Garmet Colorways in PLM Order" onOk={()=>setisOpenPlmColorways(false)} onCancel={()=>setisOpenPlmColorways(false)}>
+                {
+                  ds_plmcolorways.map((row) => {
+                    return(<>
+                        <p>{row.cw_order} . {row.cw_name}</p>
+                    </>);})
+                }
+            </AntdDModal>
 
             <AntdDModal visible={isOpenOrder1} title="Update All Ordering Dates" onOk={handleOkOrder1} onCancel={()=>setisOpenOrder1(false)}>
                 <DatePicker Value={moment(dateOrder1, dateFormat)} format={dateFormat} onChange={onChangeOrderOne}/>

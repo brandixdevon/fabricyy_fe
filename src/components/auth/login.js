@@ -7,7 +7,7 @@ import { Redirect } from 'react-router-dom';
 
 function App() {
 
-  //localStorage.setItem('session_api','http://bia-winsrv-tst1:7080');
+   //localStorage.setItem('session_api','http://bff-sr-01:8280');
   localStorage.setItem('session_api','http://localhost:1500');
   var apiurl = localStorage.getItem('session_api');
   
