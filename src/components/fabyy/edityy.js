@@ -66,6 +66,8 @@ function CreateNew()
     const [sel_Bom_Fabtype, setsel_Bom_Fabtype] = React.useState("");
     const [sel_Bom_Placement, setsel_Bom_Placement] = React.useState("");
     const [sel_Bom_Color, setsel_Bom_Color] = React.useState("");
+    const [sel_Bom_GmtColor, setsel_Bom_GmtColor] = React.useState("");
+    const [sel_Bom_Vpo, setsel_Bom_Vpo] = React.useState("");
     const [sel_Bom_Comments, setsel_Bom_Comments] = React.useState("");
     const [sel_Bom_Price, setsel_Bom_Price] = React.useState("");
     const [sel_Bom_Order1, setsel_Bom_Order1] = React.useState("");
@@ -306,317 +308,578 @@ function CreateNew()
  
       async function handleUploadOLR(event) {
 
-        const file = event.target.files[0];
-        const data = await file.arrayBuffer();
-        const workbook_1 = XLSX.read(data);
-
-        var first_sheet_name = workbook_1.SheetNames[0];
-        /* Get worksheet */
-        var worksheet = workbook_1.Sheets[first_sheet_name];
-
-        const excelProducts =   XLSX.utils.sheet_to_json(worksheet, {
-          //raw: false,
-          //header: 1,
-          //dateNF: 'yyyy-mm-dd',
-          blankrows: false,
-         })
-
-         const ExcelToJSON = JSON.stringify(excelProducts);
-
-        //alert(ToJSON);
-
-        //JSON.parse(ExcelToJSON).map(item =>
-          //{
-            
-            //return alert(item.Customer);
-          //})
-
-
-
-        /* Find desired cells */
-        var customer_cell = worksheet["B1"];
-        var vpono_cell = worksheet["T1"];
-        var techpackno_cell = worksheet["AC1"];
-        var masterstyledesc_cell = worksheet["AE1"];
-        var custstyle_cell = worksheet["AF1"];
-        var custstyledesc_cell = worksheet["AG1"];
-        var season_cell = worksheet["BK1"];
-        var mastcolordesc_cell = worksheet["AI1"];
-        var custsizedesc_cell = worksheet["AO1"];
-        var orderqty_cell = worksheet["AP1"];
-
- 
         setisloading(true);
-        
-            // `rows` is an array of rows
-            // each row being an array of cells.
 
-            let OLRITEMS = [];
-
-            if ((customer_cell ? customer_cell.v : undefined) !== "CUSTNAME") 
-            {
-              setisloading(false);
-
-              notification['error']({
-                message: 'Error',
-                description: 'This Excel File Not In Correct Format. CUSTNAME Can not Identifired.',
-                style:{color: '#000',border: '1px solid #ff6961',backgroundColor: '#ffa39e'},
-              });
-              return;
-            }
-            else if ((vpono_cell ? vpono_cell.v : undefined) !== "VPONO") 
-            {
-              setisloading(false);
-
-              notification['error']({
-                message: 'Error',
-                description: 'This Excel File Not In Correct Format. VPONO Can not Identifired.',
-                style:{color: '#000',border: '1px solid #ff6961',backgroundColor: '#ffa39e'},
-              });
-              return;
-            }
-            else if ((techpackno_cell ? techpackno_cell.v : undefined) !== "TECHPACKNO") 
-            {
-              setisloading(false);
-
-              notification['error']({
-                message: 'Error',
-                description: 'This Excel File Not In Correct Format. TECHPACKNO Can not Identifired.',
-                style:{color: '#000',border: '1px solid #ff6961',backgroundColor: '#ffa39e'},
-              });
-              return;
-            }
-            else if ((masterstyledesc_cell ? masterstyledesc_cell.v : undefined) !== "MASTSTYLEDESC") 
+        if(var_customer.toUpperCase() === "ARITZIA")
+        {
+          const file = event.target.files[0];
+          const data = await file.arrayBuffer();
+          const workbook_1 = XLSX.read(data);
+  
+          var Aritzia_first_sheet_name = workbook_1.SheetNames[0];
+          
+          /* Get worksheet */
+          var Aritzia_worksheet = workbook_1.Sheets[Aritzia_first_sheet_name];
+          
+          const excelProducts =   XLSX.utils.sheet_to_json(Aritzia_worksheet, {
+            //raw: false,
+            //header: 1,
+            //dateNF: 'yyyy-mm-dd',
+            blankrows: false,
+           })
+  
+           const ExcelToJSON = JSON.stringify(excelProducts);
+           
+  
+          /* Find desired cells */
+          var Article_cell = Aritzia_worksheet["I1"];
+          var Vendor_Article_Number_cell = Aritzia_worksheet["J1"];
+          var Short_Text_cell = Aritzia_worksheet["K1"];
+          var Aritzia_season_cell = Aritzia_worksheet["C1"];
+          var Colour_cell = Aritzia_worksheet["L1"];
+          var Size_cell = Aritzia_worksheet["M1"];
+          var Order_Quantity_cell = Aritzia_worksheet["S1"];
+  
+   
+          
+          
+              // `rows` is an array of rows
+              // each row being an array of cells.
+  
+              let OLRITEMS = [];
+  
+              if ((Article_cell ? Article_cell.v : undefined) !== "Article") 
               {
                 setisloading(false);
-
+  
                 notification['error']({
                   message: 'Error',
-                  description: 'This Excel File Not In Correct Format. MASTSTYLEDESC Can not Identifired.',
+                  description: 'This Excel File Not In Correct Format. Article Can not Identifired.',
                   style:{color: '#000',border: '1px solid #ff6961',backgroundColor: '#ffa39e'},
                 });
                 return;
-            }
-            else if ((custstyle_cell ? custstyle_cell.v : undefined) !== "CUSTSTYLE") 
-            {
-              setisloading(false);
-
-              notification['error']({
-                message: 'Error',
-                description: 'This Excel File Not In Correct Format. CUSTSTYLE Can not Identifired.',
-                style:{color: '#000',border: '1px solid #ff6961',backgroundColor: '#ffa39e'},
-              });
-              return;
-            } 
-            else if ((custstyledesc_cell ? custstyledesc_cell.v : undefined) !== "CUSTSTYLEDESC") 
-            {
-              setisloading(false);
-
-              notification['error']({
-                message: 'Error',
-                description: 'This Excel File Not In Correct Format. CUSTSTYLEDESC Can not Identifired.',
-                style:{color: '#000',border: '1px solid #ff6961',backgroundColor: '#ffa39e'},
-              });
-              return;
-            }
-            else if ((season_cell ? season_cell.v : undefined) !== "SEASON") 
-            {
-              setisloading(false);
-
-              notification['error']({
-                message: 'Error',
-                description: 'This Excel File Not In Correct Format. SEASON Can not Identifired.',
-                style:{color: '#000',border: '1px solid #ff6961',backgroundColor: '#ffa39e'},
-              });
-              return;
-            }
-            else if ((mastcolordesc_cell ? mastcolordesc_cell.v : undefined) !== "MASTCOLORDESC") 
-            {
-              setisloading(false);
-
-              notification['error']({
-                message: 'Error',
-                description: 'This Excel File Not In Correct Format. MASTCOLORDESC Can not Identifired.',
-                style:{color: '#000',border: '1px solid #ff6961',backgroundColor: '#ffa39e'},
-              });
-              return;
-            }
-            else if ((custsizedesc_cell ? custsizedesc_cell.v : undefined) !== "CUSTSIZEDESC") 
-            {
-              setisloading(false);
-
-              notification['error']({
-                message: 'Error',
-                description: 'This Excel File Not In Correct Format. CUSTSIZEDESC Can not Identifired.',
-                style:{color: '#000',border: '1px solid #ff6961',backgroundColor: '#ffa39e'},
-              });
-              return;
-            }
-            else if ((orderqty_cell ? orderqty_cell.v : undefined) !== "ORDERQTY") 
-            {
-              setisloading(false);
-
-              notification['error']({
-                message: 'Error',
-                description: 'This Excel File Not In Correct Format. ORDERQTY Can not Identifired.',
-                style:{color: '#000',border: '1px solid #ff6961',backgroundColor: '#ffa39e'},
-              });
-              return;
-            }
-            else
-            {
-              
-
-                JSON.parse(ExcelToJSON).map(item =>
-                {
-                  if(String(item.TECHPACKNO).toLowerCase() === String(var_styleno).toLowerCase())
-                  {
-                    OLRITEMS.push({CUSTNAME: item.CUSTNAME,VPONO: item.VPONO,TECHPACKNO: item.TECHPACKNO,MASTSTYLEDESC: item.MASTSTYLEDESC,CUSTSTYLE: item.CUSTSTYLE,CUSTSTYLEDESC: item.CUSTSTYLEDESC,MASTCOLORDESC: item.MASTCOLORDESC,CUSTSIZEDESC: item.CUSTSIZEDESC,ORDERQTY: item.ORDERQTY,SEASON: item.SEASON})
-                    
-                  }
-                  return null;
-                  
-                })
-
-            
-              const sendOptions = {
-                method: 'post',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    "fabyyid" : fabyyid , 
-                    "olrdata" : OLRITEMS
-                })
-              };
-            
-              fetch(`${apiurl}/fabricyy/uploadolr`,sendOptions)
-              .then(res => res.json())
-              .then(response => { 
-        
-                  if(response.Type === "SUCCESS")
-                  {
-                    
-                    fetch(`${apiurl}/fabricyy/olritemprocess/${fabyyid}`)
-                    .then(res_1 => res_1.json())
-                    .then(response_1 => { 
-              
-                        if(response_1.Type === "SUCCESS")
-                        {
-                          fetch(`${apiurl}/fabricyy/olrlineprocess/${fabyyid}`)
-                          .then(res_2 => res_2.json())
-                          .then(response_2 => { 
-                    
-                              if(response_2.Type === "SUCCESS")
-                              {
-                                  fetch(`${apiurl}/fabricyy/getolrsizes/${fabyyid}`)
-                                  .then(res_3 => res_3.json())
-                                  .then(response_3 => { 
-                            
-                                      if(response_3.Type === "SUCCESS")
-                                      {
-                                        setds_olr_sizeset(response_3.Data);
-                                        setds_olr_sizelength(response_3.Data.length);
-
-                                          fetch(`${apiurl}/fabricyy/getolrdata/${fabyyid}`)
-                                          .then(res_4 => res_4.json())
-                                          .then(response_4 => { 
-                                    
-                                              if(response_4.Type === "SUCCESS")
-                                              {
-                                                setds_olr_colorset(response_4.Data);
-
-                                                  setisloading(false);
-
-                                                  RefreshHeaders();
-                                                  
-                                                  notification['success']({
-                                                    message: 'Data Success',
-                                                    description: 'OLR Data Processing Completed.',
-                                                    style:{color: '#000',border: '1px solid #2ecc71',backgroundColor: '#d5f5e3'},
-                                                  }); 
-                                              }
-                                              else
-                                              {
-                                                setisloading(false);
-
-                                                  notification['error']({
-                                                      message: 'Data Error',
-                                                      description: "Error in OLR Data Processing",
-                                                      style:{color: '#000',border: '1px solid #ff6961',backgroundColor: '#ffa39e'},
-                                                    });
-                          
-                                              }
-                                          })
-
-                                      }
-                                      else
-                                      {
-                                        setisloading(false);
-
-                                          notification['error']({
-                                              message: 'Data Error',
-                                              description: "Error in OLR Data Processing",
-                                              style:{color: '#000',border: '1px solid #ff6961',backgroundColor: '#ffa39e'},
-                                            });
-                  
-                                      }
-                                  })
-
-                              }
-                              else
-                              {
-                                setisloading(false);
-
-                                  notification['error']({
-                                      message: 'Data Error',
-                                      description: "Error in OLR Data Processing",
-                                      style:{color: '#000',border: '1px solid #ff6961',backgroundColor: '#ffa39e'},
-                                    });
-          
-                              }
-                          })
-
-                        }
-                        else
-                        {
-                          setisloading(false);
-
-                            notification['error']({
-                                message: 'Data Error',
-                                description: "Error in OLR Data Processing",
-                                style:{color: '#000',border: '1px solid #ff6961',backgroundColor: '#ffa39e'},
-                              });
-    
-                        }
-                    })
-
-                  }
-                  else
-                  {
-                    setisloading(false);
-
-                      notification['error']({
-                          message: 'Data Error',
-                          description: response.Msg,
-                          style:{color: '#000',border: '1px solid #ff6961',backgroundColor: '#ffa39e'},
-                        });
-
-                  }
-        
-                    
-              })
-              .catch(error => {
+              }
+              else if ((Vendor_Article_Number_cell ? Vendor_Article_Number_cell.v : undefined) !== "Vendor Article Number") 
+              {
                 setisloading(false);
-
+  
+                notification['error']({
+                  message: 'Error',
+                  description: 'This Excel File Not In Correct Format. Vendor Article Number Can not Identifired.',
+                  style:{color: '#000',border: '1px solid #ff6961',backgroundColor: '#ffa39e'},
+                });
+                return;
+              } 
+              else if ((Short_Text_cell ? Short_Text_cell.v : undefined) !== "Short Text") 
+              {
+                setisloading(false);
+  
+                notification['error']({
+                  message: 'Error',
+                  description: 'This Excel File Not In Correct Format. Short Text Can not Identifired.',
+                  style:{color: '#000',border: '1px solid #ff6961',backgroundColor: '#ffa39e'},
+                });
+                return;
+              }
+              else if ((Aritzia_season_cell ? Aritzia_season_cell.v : undefined) !== "Season") 
+              {
+                setisloading(false);
+  
+                notification['error']({
+                  message: 'Error',
+                  description: 'This Excel File Not In Correct Format. Season Can not Identifired.',
+                  style:{color: '#000',border: '1px solid #ff6961',backgroundColor: '#ffa39e'},
+                });
+                return;
+              }
+              else if ((Colour_cell ? Colour_cell.v : undefined) !== "Colour") 
+              {
+                setisloading(false);
+  
+                notification['error']({
+                  message: 'Error',
+                  description: 'This Excel File Not In Correct Format. Colour Can not Identifired.',
+                  style:{color: '#000',border: '1px solid #ff6961',backgroundColor: '#ffa39e'},
+                });
+                return;
+              }
+              else if ((Order_Quantity_cell ? Order_Quantity_cell.v : undefined) !== "Order Quantity") 
+              {
+                setisloading(false);
+  
+                notification['error']({
+                  message: 'Error',
+                  description: 'This Excel File Not In Correct Format. Order Quantity Can not Identifired.',
+                  style:{color: '#000',border: '1px solid #ff6961',backgroundColor: '#ffa39e'},
+                });
+                return;
+              }
+              else if ((Size_cell ? Size_cell.v : undefined) !== "Size") 
+              {
+                setisloading(false);
+  
+                notification['error']({
+                  message: 'Error',
+                  description: 'This Excel File Not In Correct Format. Size Can not Identifired.',
+                  style:{color: '#000',border: '1px solid #ff6961',backgroundColor: '#ffa39e'},
+                });
+                return;
+              }
+              else
+              {
+                  JSON.parse(ExcelToJSON).map(item =>
+                  {
+                    
+                    if(String(item['Vendor Article Number']).toLowerCase() === String(var_styleno).toLowerCase() && String(item['Colour']).toLowerCase() !== "" && String(item['Colour']).toLowerCase() !== "undefined")
+                    {
+                      OLRITEMS.push({CUSTNAME: var_customer.toUpperCase() ,VPONO: item['Article'],TECHPACKNO: item['Vendor Article Number'],MASTSTYLEDESC: item['Short Text'],CUSTSTYLE: item['Vendor Article Number'],CUSTSTYLEDESC: item['Short Text'],MASTCOLORDESC: item['Colour'],CUSTSIZEDESC: item['Size'],ORDERQTY: item['Order Quantity'],SEASON: item['Season']})
+                      
+                    }
+                    return null;
+                    
+                  })
+              
+                const sendOptions = {
+                  method: 'post',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({
+                      "fabyyid" : fabyyid , 
+                      "olrdata" : OLRITEMS
+                  })
+                };
+              
+                fetch(`${apiurl}/fabricyy/uploadolr`,sendOptions)
+                .then(res => res.json())
+                .then(response => { 
+          
+                    if(response.Type === "SUCCESS")
+                    {
+                      
+                      fetch(`${apiurl}/fabricyy/olritemprocess/${fabyyid}`)
+                      .then(res_1 => res_1.json())
+                      .then(response_1 => { 
+                
+                          if(response_1.Type === "SUCCESS")
+                          {
+                            fetch(`${apiurl}/fabricyy/olrlineprocess/${fabyyid}`)
+                            .then(res_2 => res_2.json())
+                            .then(response_2 => { 
+                      
+                                if(response_2.Type === "SUCCESS")
+                                {
+                                    fetch(`${apiurl}/fabricyy/getolrsizes/${fabyyid}`)
+                                    .then(res_3 => res_3.json())
+                                    .then(response_3 => { 
+                              
+                                        if(response_3.Type === "SUCCESS")
+                                        {
+                                          setds_olr_sizeset(response_3.Data);
+                                          setds_olr_sizelength(response_3.Data.length);
+  
+                                            fetch(`${apiurl}/fabricyy/getolrdata/${fabyyid}`)
+                                            .then(res_4 => res_4.json())
+                                            .then(response_4 => { 
+                                      
+                                                if(response_4.Type === "SUCCESS")
+                                                {
+                                                  setds_olr_colorset(response_4.Data);
+  
+                                                    setisloading(false);
+  
+                                                    RefreshHeaders();
+                                                    
+                                                    notification['success']({
+                                                      message: 'Data Success',
+                                                      description: 'OLR Data Processing Completed.',
+                                                      style:{color: '#000',border: '1px solid #2ecc71',backgroundColor: '#d5f5e3'},
+                                                    }); 
+                                                }
+                                                else
+                                                {
+                                                  setisloading(false);
+  
+                                                    notification['error']({
+                                                        message: 'Data Error',
+                                                        description: "Error in OLR Data Processing",
+                                                        style:{color: '#000',border: '1px solid #ff6961',backgroundColor: '#ffa39e'},
+                                                      });
+                            
+                                                }
+                                            })
+  
+                                        }
+                                        else
+                                        {
+                                          setisloading(false);
+  
+                                            notification['error']({
+                                                message: 'Data Error',
+                                                description: "Error in OLR Data Processing",
+                                                style:{color: '#000',border: '1px solid #ff6961',backgroundColor: '#ffa39e'},
+                                              });
+                    
+                                        }
+                                    })
+  
+                                }
+                                else
+                                {
+                                  setisloading(false);
+  
+                                    notification['error']({
+                                        message: 'Data Error',
+                                        description: "Error in OLR Data Processing",
+                                        style:{color: '#000',border: '1px solid #ff6961',backgroundColor: '#ffa39e'},
+                                      });
+            
+                                }
+                            })
+  
+                          }
+                          else
+                          {
+                            setisloading(false);
+  
+                              notification['error']({
+                                  message: 'Data Error',
+                                  description: "Error in OLR Data Processing",
+                                  style:{color: '#000',border: '1px solid #ff6961',backgroundColor: '#ffa39e'},
+                                });
+      
+                          }
+                      })
+  
+                    }
+                    else
+                    {
+                      setisloading(false);
+  
+                        notification['error']({
+                            message: 'Data Error',
+                            description: response.Msg,
+                            style:{color: '#000',border: '1px solid #ff6961',backgroundColor: '#ffa39e'},
+                          });
+  
+                    }
+          
+                      
+                })
+                .catch(error => {
+                  setisloading(false);
+  
+                    notification['error']({
+                        message: 'Data Error',
+                        description: error,
+                        style:{color: '#000',border: '1px solid #ff6961',backgroundColor: '#ffa39e'},
+                      }); 
+          
+                });
+  
+              }
+        }
+        else
+        {
+          const file = event.target.files[0];
+          const data = await file.arrayBuffer();
+          const workbook_1 = XLSX.read(data);
+  
+          var first_sheet_name = workbook_1.SheetNames[0];
+          
+          /* Get worksheet */
+          var worksheet = workbook_1.Sheets[first_sheet_name];
+          
+          const excelProducts =   XLSX.utils.sheet_to_json(worksheet, {
+            //raw: false,
+            //header: 1,
+            //dateNF: 'yyyy-mm-dd',
+            blankrows: false,
+           })
+  
+           const ExcelToJSON = JSON.stringify(excelProducts);
+           
+  
+          /* Find desired cells */
+          var customer_cell = worksheet["B1"];
+          var vpono_cell = worksheet["T1"];
+          var techpackno_cell = worksheet["AC1"];
+          var masterstyledesc_cell = worksheet["AE1"];
+          var custstyle_cell = worksheet["AF1"];
+          var custstyledesc_cell = worksheet["AG1"];
+          var season_cell = worksheet["BK1"];
+          var mastcolordesc_cell = worksheet["AI1"];
+          var custsizedesc_cell = worksheet["AO1"];
+          var orderqty_cell = worksheet["AP1"];
+  
+   
+          
+          
+              // `rows` is an array of rows
+              // each row being an array of cells.
+  
+              let OLRITEMS = [];
+  
+              if ((customer_cell ? customer_cell.v : undefined) !== "CUSTNAME") 
+              {
+                setisloading(false);
+  
+                notification['error']({
+                  message: 'Error',
+                  description: 'This Excel File Not In Correct Format. CUSTNAME Can not Identifired.',
+                  style:{color: '#000',border: '1px solid #ff6961',backgroundColor: '#ffa39e'},
+                });
+                return;
+              }
+              else if ((vpono_cell ? vpono_cell.v : undefined) !== "VPONO") 
+              {
+                setisloading(false);
+  
+                notification['error']({
+                  message: 'Error',
+                  description: 'This Excel File Not In Correct Format. VPONO Can not Identifired.',
+                  style:{color: '#000',border: '1px solid #ff6961',backgroundColor: '#ffa39e'},
+                });
+                return;
+              }
+              else if ((techpackno_cell ? techpackno_cell.v : undefined) !== "TECHPACKNO") 
+              {
+                setisloading(false);
+  
+                notification['error']({
+                  message: 'Error',
+                  description: 'This Excel File Not In Correct Format. TECHPACKNO Can not Identifired.',
+                  style:{color: '#000',border: '1px solid #ff6961',backgroundColor: '#ffa39e'},
+                });
+                return;
+              }
+              else if ((masterstyledesc_cell ? masterstyledesc_cell.v : undefined) !== "MASTSTYLEDESC") 
+                {
+                  setisloading(false);
+  
                   notification['error']({
-                      message: 'Data Error',
-                      description: error,
-                      style:{color: '#000',border: '1px solid #ff6961',backgroundColor: '#ffa39e'},
-                    }); 
+                    message: 'Error',
+                    description: 'This Excel File Not In Correct Format. MASTSTYLEDESC Can not Identifired.',
+                    style:{color: '#000',border: '1px solid #ff6961',backgroundColor: '#ffa39e'},
+                  });
+                  return;
+              }
+              else if ((custstyle_cell ? custstyle_cell.v : undefined) !== "CUSTSTYLE") 
+              {
+                setisloading(false);
+  
+                notification['error']({
+                  message: 'Error',
+                  description: 'This Excel File Not In Correct Format. CUSTSTYLE Can not Identifired.',
+                  style:{color: '#000',border: '1px solid #ff6961',backgroundColor: '#ffa39e'},
+                });
+                return;
+              } 
+              else if ((custstyledesc_cell ? custstyledesc_cell.v : undefined) !== "CUSTSTYLEDESC") 
+              {
+                setisloading(false);
+  
+                notification['error']({
+                  message: 'Error',
+                  description: 'This Excel File Not In Correct Format. CUSTSTYLEDESC Can not Identifired.',
+                  style:{color: '#000',border: '1px solid #ff6961',backgroundColor: '#ffa39e'},
+                });
+                return;
+              }
+              else if ((season_cell ? season_cell.v : undefined) !== "SEASON") 
+              {
+                setisloading(false);
+  
+                notification['error']({
+                  message: 'Error',
+                  description: 'This Excel File Not In Correct Format. SEASON Can not Identifired.',
+                  style:{color: '#000',border: '1px solid #ff6961',backgroundColor: '#ffa39e'},
+                });
+                return;
+              }
+              else if ((mastcolordesc_cell ? mastcolordesc_cell.v : undefined) !== "MASTCOLORDESC") 
+              {
+                setisloading(false);
+  
+                notification['error']({
+                  message: 'Error',
+                  description: 'This Excel File Not In Correct Format. MASTCOLORDESC Can not Identifired.',
+                  style:{color: '#000',border: '1px solid #ff6961',backgroundColor: '#ffa39e'},
+                });
+                return;
+              }
+              else if ((custsizedesc_cell ? custsizedesc_cell.v : undefined) !== "CUSTSIZEDESC") 
+              {
+                setisloading(false);
+  
+                notification['error']({
+                  message: 'Error',
+                  description: 'This Excel File Not In Correct Format. CUSTSIZEDESC Can not Identifired.',
+                  style:{color: '#000',border: '1px solid #ff6961',backgroundColor: '#ffa39e'},
+                });
+                return;
+              }
+              else if ((orderqty_cell ? orderqty_cell.v : undefined) !== "ORDERQTY") 
+              {
+                setisloading(false);
+  
+                notification['error']({
+                  message: 'Error',
+                  description: 'This Excel File Not In Correct Format. ORDERQTY Can not Identifired.',
+                  style:{color: '#000',border: '1px solid #ff6961',backgroundColor: '#ffa39e'},
+                });
+                return;
+              }
+              else
+              {
+                  JSON.parse(ExcelToJSON).map(item =>
+                  {
+                    if(String(item.TECHPACKNO).toLowerCase() === String(var_styleno).toLowerCase())
+                    {
+                      OLRITEMS.push({CUSTNAME: item.CUSTNAME,VPONO: item.VPONO,TECHPACKNO: item.TECHPACKNO,MASTSTYLEDESC: item.MASTSTYLEDESC,CUSTSTYLE: item.CUSTSTYLE,CUSTSTYLEDESC: item.CUSTSTYLEDESC,MASTCOLORDESC: item.MASTCOLORDESC,CUSTSIZEDESC: item.CUSTSIZEDESC,ORDERQTY: item.ORDERQTY,SEASON: item.SEASON})
+                      
+                    }
+                    return null;
+                    
+                  })
+              
+                const sendOptions = {
+                  method: 'post',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({
+                      "fabyyid" : fabyyid , 
+                      "olrdata" : OLRITEMS
+                  })
+                };
+              
+                fetch(`${apiurl}/fabricyy/uploadolr`,sendOptions)
+                .then(res => res.json())
+                .then(response => { 
+          
+                    if(response.Type === "SUCCESS")
+                    {
+                      
+                      fetch(`${apiurl}/fabricyy/olritemprocess/${fabyyid}`)
+                      .then(res_1 => res_1.json())
+                      .then(response_1 => { 
+                
+                          if(response_1.Type === "SUCCESS")
+                          {
+                            fetch(`${apiurl}/fabricyy/olrlineprocess/${fabyyid}`)
+                            .then(res_2 => res_2.json())
+                            .then(response_2 => { 
+                      
+                                if(response_2.Type === "SUCCESS")
+                                {
+                                    fetch(`${apiurl}/fabricyy/getolrsizes/${fabyyid}`)
+                                    .then(res_3 => res_3.json())
+                                    .then(response_3 => { 
+                              
+                                        if(response_3.Type === "SUCCESS")
+                                        {
+                                          setds_olr_sizeset(response_3.Data);
+                                          setds_olr_sizelength(response_3.Data.length);
+  
+                                            fetch(`${apiurl}/fabricyy/getolrdata/${fabyyid}`)
+                                            .then(res_4 => res_4.json())
+                                            .then(response_4 => { 
+                                      
+                                                if(response_4.Type === "SUCCESS")
+                                                {
+                                                  setds_olr_colorset(response_4.Data);
+  
+                                                    setisloading(false);
+  
+                                                    RefreshHeaders();
+                                                    
+                                                    notification['success']({
+                                                      message: 'Data Success',
+                                                      description: 'OLR Data Processing Completed.',
+                                                      style:{color: '#000',border: '1px solid #2ecc71',backgroundColor: '#d5f5e3'},
+                                                    }); 
+                                                }
+                                                else
+                                                {
+                                                  setisloading(false);
+  
+                                                    notification['error']({
+                                                        message: 'Data Error',
+                                                        description: "Error in OLR Data Processing",
+                                                        style:{color: '#000',border: '1px solid #ff6961',backgroundColor: '#ffa39e'},
+                                                      });
+                            
+                                                }
+                                            })
+  
+                                        }
+                                        else
+                                        {
+                                          setisloading(false);
+  
+                                            notification['error']({
+                                                message: 'Data Error',
+                                                description: "Error in OLR Data Processing",
+                                                style:{color: '#000',border: '1px solid #ff6961',backgroundColor: '#ffa39e'},
+                                              });
+                    
+                                        }
+                                    })
+  
+                                }
+                                else
+                                {
+                                  setisloading(false);
+  
+                                    notification['error']({
+                                        message: 'Data Error',
+                                        description: "Error in OLR Data Processing",
+                                        style:{color: '#000',border: '1px solid #ff6961',backgroundColor: '#ffa39e'},
+                                      });
+            
+                                }
+                            })
+  
+                          }
+                          else
+                          {
+                            setisloading(false);
+  
+                              notification['error']({
+                                  message: 'Data Error',
+                                  description: "Error in OLR Data Processing",
+                                  style:{color: '#000',border: '1px solid #ff6961',backgroundColor: '#ffa39e'},
+                                });
+      
+                          }
+                      })
+  
+                    }
+                    else
+                    {
+                      setisloading(false);
+  
+                        notification['error']({
+                            message: 'Data Error',
+                            description: response.Msg,
+                            style:{color: '#000',border: '1px solid #ff6961',backgroundColor: '#ffa39e'},
+                          });
+  
+                    }
+          
+                      
+                })
+                .catch(error => {
+                  setisloading(false);
+  
+                    notification['error']({
+                        message: 'Data Error',
+                        description: error,
+                        style:{color: '#000',border: '1px solid #ff6961',backgroundColor: '#ffa39e'},
+                      }); 
+          
+                });
+  
+              }
+        }
         
-              });
-
-            }
-
 
       }
 
@@ -1536,6 +1799,7 @@ function CreateNew()
               <td>{rowvalue.plm_placement}</td>
               <td>{rowvalue.cw_name}</td>
               <td>{rowvalue.plm_color}</td>
+              <td>{rowvalue.vpono}</td>
               <td><EditTwoTone onClick={() => GetBomItemforEdit(rowvalue.item_id)} style={{fontSize:"20px",cursor:"pointer"}} twoToneColor="#FFBF00" /></td>
               <td>{rowvalue.item_price}</td>
               <td>{rowvalue.item_ordering}</td>
@@ -1562,7 +1826,10 @@ function CreateNew()
               <td><EditTwoTone onClick={() => GetSizeItemforEdit(row_value.olr_item_id)} style={{fontSize:"15px",cursor:"pointer"}} twoToneColor="#FFBF00" /></td>
               <td>{row_value.garmentway}</td>
               <td>{row_value.color}</td>
-              <td>{row_value.flex}</td>
+              {
+                var_customer.toUpperCase() === "ARITZIA" ? (<></>) : (<td>{row_value.flex}</td>)
+              }
+              
               <td>{row_value.vpono}</td>
               {indents.map((row_tb) =><td>{row_tb}</td>)}
               <td>{row_value.sub_total}</td>
@@ -1577,8 +1844,8 @@ function CreateNew()
         return(
           <>
           <tr>
-            <th><Button size="small" type="primary">Sync</Button></th>
-            <th><Button size="small" type="primary">Sync</Button></th>
+            <th><Button size="small" type="primary" onClick={()=>{SyncGrapgic();}}>Sync</Button></th>
+            <th><Button size="small" type="primary" onClick={()=>{SyncDyewash();}}>Sync</Button></th>
             <th colSpan={ds_olr_sizelength + 7}></th>
           </tr>
           <tr>
@@ -1587,7 +1854,9 @@ function CreateNew()
           <th style={{width:"50px",borderStyle:"solid",borderWidth:"1px"}}>#</th>
           <th style={{width:"150px",borderStyle:"solid",borderWidth:"1px"}}>GARMENT WAY</th>
           <th style={{width:"150px",borderStyle:"solid",borderWidth:"1px"}}>COLOR</th>
-          <th style={{width:"50px",borderStyle:"solid",borderWidth:"1px"}}>FLEX</th>
+          {
+            var_customer.toUpperCase() === "ARITZIA" ? (<></>) : (<th style={{width:"50px",borderStyle:"solid",borderWidth:"1px"}}>FLEX</th>)
+          }
           <th style={{width:"50px",borderStyle:"solid",borderWidth:"1px"}}>VPO</th>
           {
             ds_olr_sizeset.map((row_tb) =><th style={{width:"75px",borderStyle:"solid",borderWidth:"1px"}}>{row_tb.sizename}</th>)
@@ -1981,57 +2250,75 @@ function CreateNew()
                                     if(response_4.Type === "SUCCESS")
                                     {
 
-                                      fetch(`${apiurl}/fabricyy/getplmcolorways/${fabyyid}`)
-                                      .then(res_plmcolor => res_plmcolor.json())
-                                      .then(response_plmcolor => 
+                                      fetch(`${apiurl}/fabricyy/plmlineprocess/${fabyyid}`)
+                                      .then(res_plmlinevpo => res_plmlinevpo.json())
+                                      .then(response_plmlinevpo => 
                                         {
-                                          if(response_plmcolor.Type === "SUCCESS")
+                                          if(response_plmlinevpo.Type === "SUCCESS")
                                           {
-                                            setds_plmcolorways(response_plmcolor.Data);
+                                            
+                                            fetch(`${apiurl}/fabricyy/getplmcolorways/${fabyyid}`)
+                                            .then(res_plmcolor => res_plmcolor.json())
+                                            .then(response_plmcolor => 
+                                              {
+                                                if(response_plmcolor.Type === "SUCCESS")
+                                                {
+                                                  setds_plmcolorways(response_plmcolor.Data);
+                                                  
+                                                }
+                                              })
+
+                                            const sendOptions_plmtoyy = {
+                                              method: 'post',
+                                              headers: { 'Content-Type': 'application/json' },
+                                              body: JSON.stringify({
+                                                  "fabric_yyid" : fabyyid , 
+                                                  "plmstyleid" : var_plmstyle , 
+                                                  "plmseasonid" : var_plmsseasonID , 
+                                                  "plmbomid" : var_plmrevbomID , 
+                                                  "token" : var_plmsession})
+                                            };
+
+                                            fetch(`${apiurl}/fabricyy/updateyyplmdata`,sendOptions_plmtoyy)
+                                            .then(res_plmtoyy => res_plmtoyy.json())
+                                            .then(response_plmtoyy =>
+                                              {
+
+                                                notification['success']({
+                                                  message: 'Success Notification',
+                                                  description:'PLM BOM Items Loading Completed.' ,
+                                                  style:{color: '#000',border: '1px solid #ccffcc',backgroundColor: '#99ff66'},
+                                                });
+
+                                                RefreshHeaders();
+          
+                                                fetch(`${apiurl}/fabricyy/getplmitemsindb/${fabyyid}`)
+                                                .then(res_5 => res_5.json())
+                                                .then(response_5 => 
+                                                  {
+                                                    if(response_5.Type === "SUCCESS")
+                                                    {
+                                                      setds_plm_bomfull(response_5.Data);
+                                                      
+                                                      setisloading(false);
+                                                      
+                                                    }
+                                                  })
+
+                                              })
                                             
                                           }
+                                          else
+                                          {
+                                            setisloading(false);
+                                            notification['error']({
+                                                message: 'Data Error',
+                                                description: 'Data Loading Error.',
+                                                style:{color: '#000',border: '1px solid #ff6961',backgroundColor: '#ffa39e'},
+                                              });
+                                          }
                                         })
-
-                                      const sendOptions_plmtoyy = {
-                                        method: 'post',
-                                        headers: { 'Content-Type': 'application/json' },
-                                        body: JSON.stringify({
-                                            "fabric_yyid" : fabyyid , 
-                                            "plmstyleid" : var_plmstyle , 
-                                            "plmseasonid" : var_plmsseasonID , 
-                                            "plmbomid" : var_plmrevbomID , 
-                                            "token" : var_plmsession})
-                                      };
-
-                                      fetch(`${apiurl}/fabricyy/updateyyplmdata`,sendOptions_plmtoyy)
-                                      .then(res_plmtoyy => res_plmtoyy.json())
-                                      .then(response_plmtoyy =>
-                                        {
-
-                                          notification['success']({
-                                            message: 'Success Notification',
-                                            description:'PLM BOM Items Loading Completed.' ,
-                                            style:{color: '#000',border: '1px solid #ccffcc',backgroundColor: '#99ff66'},
-                                          });
-
-                                          RefreshHeaders();
-    
-                                          fetch(`${apiurl}/fabricyy/getplmitemsindb/${fabyyid}`)
-                                          .then(res_5 => res_5.json())
-                                          .then(response_5 => 
-                                            {
-                                              if(response_5.Type === "SUCCESS")
-                                              {
-                                                setds_plm_bomfull(response_5.Data);
-                                                
-                                                setisloading(false);
-                                                
-                                              }
-                                            })
-
-                                        })
-
-                                      
+ 
                                       
                                     }
                                   })
@@ -2105,7 +2392,9 @@ function CreateNew()
                     setsel_Bom_Supplier(response_1.Data[0].plm_supplier);
                     setsel_Bom_Fabtype(response_1.Data[0].plm_colorway_type);
                     setsel_Bom_Placement(response_1.Data[0].plm_placement);
+                    setsel_Bom_GmtColor(response_1.Data[0].cw_name);
                     setsel_Bom_Color(response_1.Data[0].plm_color);
+                    setsel_Bom_Vpo(response_1.Data[0].vpono);
                     setsel_Bom_Comments(response_1.Data[0].item_comment);
                     setsel_Bom_Price(response_1.Data[0].item_price);
                     setsel_Bom_Order1(response_1.Data[0].item_ordering);
@@ -2416,76 +2705,158 @@ function CreateNew()
         worksheet.getCell(`C${value_plm_row}`).alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
         worksheet.getCell(`D${value_plm_row}`).value = "COLOR";
         worksheet.getCell(`D${value_plm_row}`).alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
-        worksheet.getCell(`E${value_plm_row}`).value = "FLEX";
-        worksheet.getCell(`E${value_plm_row}`).alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
-        worksheet.getCell(`F${value_plm_row}`).value = "TOTAL";
-        worksheet.getCell(`F${value_plm_row}`).alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
-        worksheet.getCell(`G${value_plm_row}`).value = "PRODUCTION PLANT";
-        worksheet.getCell(`G${value_plm_row}`).alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
 
-        if(ds_olr_colorset.length > 0){
+        if(var_customer.toUpperCase() === "ARITZIA")
+        {
+          worksheet.getCell(`E${value_plm_row}`).value = "VPO";
+          worksheet.getCell(`E${value_plm_row}`).alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
+          worksheet.getCell(`F${value_plm_row}`).value = "TOTAL";
+          worksheet.getCell(`F${value_plm_row}`).alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
+          worksheet.getCell(`G${value_plm_row}`).value = "PRODUCTION PLANT";
+          worksheet.getCell(`G${value_plm_row}`).alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
 
-        worksheet.getCell(`H${value_plm_row}`).value = ds_olr_colorset[0].s1_name;
-        worksheet.getCell(`H${value_plm_row}`).alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
-        worksheet.getCell(`I${value_plm_row}`).value = ds_olr_colorset[0].s2_name;
-        worksheet.getCell(`I${value_plm_row}`).alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
-        worksheet.getCell(`J${value_plm_row}`).value = ds_olr_colorset[0].s3_name;
-        worksheet.getCell(`J${value_plm_row}`).alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
-        worksheet.getCell(`K${value_plm_row}`).value = ds_olr_colorset[0].s4_name;
-        worksheet.getCell(`K${value_plm_row}`).alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
-        worksheet.getCell(`L${value_plm_row}`).value = ds_olr_colorset[0].s5_name;
-        worksheet.getCell(`L${value_plm_row}`).alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
-        worksheet.getCell(`M${value_plm_row}`).value = ds_olr_colorset[0].s6_name;
-        worksheet.getCell(`M${value_plm_row}`).alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
-        worksheet.getCell(`N${value_plm_row}`).value = ds_olr_colorset[0].s7_name;
-        worksheet.getCell(`N${value_plm_row}`).alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
-        worksheet.getCell(`O${value_plm_row}`).value = ds_olr_colorset[0].s8_name;
-        worksheet.getCell(`O${value_plm_row}`).alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
-        worksheet.getCell(`P${value_plm_row}`).value = ds_olr_colorset[0].s9_name;
-        worksheet.getCell(`P${value_plm_row}`).alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
-        worksheet.getCell(`Q${value_plm_row}`).value = ds_olr_colorset[0].s10_name;
-        worksheet.getCell(`Q${value_plm_row}`).alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
-        worksheet.getCell(`R${value_plm_row}`).value = ds_olr_colorset[0].s11_name;
-        worksheet.getCell(`R${value_plm_row}`).alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
-        worksheet.getCell(`S${value_plm_row}`).value = ds_olr_colorset[0].s12_name;
-        worksheet.getCell(`S${value_plm_row}`).alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
-        worksheet.getCell(`T${value_plm_row}`).value = ds_olr_colorset[0].s13_name;
-        worksheet.getCell(`T${value_plm_row}`).alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
-        worksheet.getCell(`U${value_plm_row}`).value = ds_olr_colorset[0].s14_name;
-        worksheet.getCell(`U${value_plm_row}`).alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
-        worksheet.getCell(`V${value_plm_row}`).value = ds_olr_colorset[0].s15_name;
-        worksheet.getCell(`V${value_plm_row}`).alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
-        worksheet.getCell(`W${value_plm_row}`).value = ds_olr_colorset[0].s16_name;
-        worksheet.getCell(`W${value_plm_row}`).alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
-        worksheet.getCell(`X${value_plm_row}`).value = ds_olr_colorset[0].s17_name;
-        worksheet.getCell(`X${value_plm_row}`).alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
-        worksheet.getCell(`Y${value_plm_row}`).value = ds_olr_colorset[0].s18_name;
-        worksheet.getCell(`Y${value_plm_row}`).alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
-        worksheet.getCell(`Z${value_plm_row}`).value = ds_olr_colorset[0].s19_name;
-        worksheet.getCell(`Z${value_plm_row}`).alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
-        worksheet.getCell(`AA${value_plm_row}`).value = ds_olr_colorset[0].s20_name;
-        worksheet.getCell(`AA${value_plm_row}`).alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
-        worksheet.getCell(`AB${value_plm_row}`).value = ds_olr_colorset[0].s21_name;
-        worksheet.getCell(`AB${value_plm_row}`).alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
-        worksheet.getCell(`AC${value_plm_row}`).value = ds_olr_colorset[0].s22_name;
-        worksheet.getCell(`AC${value_plm_row}`).alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
-        worksheet.getCell(`AD${value_plm_row}`).value = ds_olr_colorset[0].s23_name;
-        worksheet.getCell(`AD${value_plm_row}`).alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
-        worksheet.getCell(`AE${value_plm_row}`).value = ds_olr_colorset[0].s24_name;
-        worksheet.getCell(`AE${value_plm_row}`).alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
-        worksheet.getCell(`AF${value_plm_row}`).value = ds_olr_colorset[0].s25_name;
-        worksheet.getCell(`AF${value_plm_row}`).alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
-        worksheet.getCell(`AG${value_plm_row}`).value = ds_olr_colorset[0].s26_name;
-        worksheet.getCell(`AG${value_plm_row}`).alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
-        worksheet.getCell(`AH${value_plm_row}`).value = ds_olr_colorset[0].s26_name;
-        worksheet.getCell(`AH${value_plm_row}`).alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
-        worksheet.getCell(`AI${value_plm_row}`).value = ds_olr_colorset[0].s28_name;
-        worksheet.getCell(`AI${value_plm_row}`).alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
-        worksheet.getCell(`AJ${value_plm_row}`).value = ds_olr_colorset[0].s29_name;
-        worksheet.getCell(`AJ${value_plm_row}`).alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
-        worksheet.getCell(`AK${value_plm_row}`).value = ds_olr_colorset[0].s30_name;
-        worksheet.getCell(`AK${value_plm_row}`).alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
+          if(ds_olr_colorset.length > 0){
 
+            worksheet.getCell(`H${value_plm_row}`).value = ds_olr_colorset[0].s1_name;
+            worksheet.getCell(`H${value_plm_row}`).alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
+            worksheet.getCell(`I${value_plm_row}`).value = ds_olr_colorset[0].s2_name;
+            worksheet.getCell(`I${value_plm_row}`).alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
+            worksheet.getCell(`J${value_plm_row}`).value = ds_olr_colorset[0].s3_name;
+            worksheet.getCell(`J${value_plm_row}`).alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
+            worksheet.getCell(`K${value_plm_row}`).value = ds_olr_colorset[0].s4_name;
+            worksheet.getCell(`K${value_plm_row}`).alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
+            worksheet.getCell(`L${value_plm_row}`).value = ds_olr_colorset[0].s5_name;
+            worksheet.getCell(`L${value_plm_row}`).alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
+            worksheet.getCell(`M${value_plm_row}`).value = ds_olr_colorset[0].s6_name;
+            worksheet.getCell(`M${value_plm_row}`).alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
+            worksheet.getCell(`N${value_plm_row}`).value = ds_olr_colorset[0].s7_name;
+            worksheet.getCell(`N${value_plm_row}`).alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
+            worksheet.getCell(`O${value_plm_row}`).value = ds_olr_colorset[0].s8_name;
+            worksheet.getCell(`O${value_plm_row}`).alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
+            worksheet.getCell(`P${value_plm_row}`).value = ds_olr_colorset[0].s9_name;
+            worksheet.getCell(`P${value_plm_row}`).alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
+            worksheet.getCell(`Q${value_plm_row}`).value = ds_olr_colorset[0].s10_name;
+            worksheet.getCell(`Q${value_plm_row}`).alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
+            worksheet.getCell(`R${value_plm_row}`).value = ds_olr_colorset[0].s11_name;
+            worksheet.getCell(`R${value_plm_row}`).alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
+            worksheet.getCell(`S${value_plm_row}`).value = ds_olr_colorset[0].s12_name;
+            worksheet.getCell(`S${value_plm_row}`).alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
+            worksheet.getCell(`T${value_plm_row}`).value = ds_olr_colorset[0].s13_name;
+            worksheet.getCell(`T${value_plm_row}`).alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
+            worksheet.getCell(`U${value_plm_row}`).value = ds_olr_colorset[0].s14_name;
+            worksheet.getCell(`U${value_plm_row}`).alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
+            worksheet.getCell(`V${value_plm_row}`).value = ds_olr_colorset[0].s15_name;
+            worksheet.getCell(`V${value_plm_row}`).alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
+            worksheet.getCell(`W${value_plm_row}`).value = ds_olr_colorset[0].s16_name;
+            worksheet.getCell(`W${value_plm_row}`).alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
+            worksheet.getCell(`X${value_plm_row}`).value = ds_olr_colorset[0].s17_name;
+            worksheet.getCell(`X${value_plm_row}`).alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
+            worksheet.getCell(`Y${value_plm_row}`).value = ds_olr_colorset[0].s18_name;
+            worksheet.getCell(`Y${value_plm_row}`).alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
+            worksheet.getCell(`Z${value_plm_row}`).value = ds_olr_colorset[0].s19_name;
+            worksheet.getCell(`Z${value_plm_row}`).alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
+            worksheet.getCell(`AA${value_plm_row}`).value = ds_olr_colorset[0].s20_name;
+            worksheet.getCell(`AA${value_plm_row}`).alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
+            worksheet.getCell(`AB${value_plm_row}`).value = ds_olr_colorset[0].s21_name;
+            worksheet.getCell(`AB${value_plm_row}`).alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
+            worksheet.getCell(`AC${value_plm_row}`).value = ds_olr_colorset[0].s22_name;
+            worksheet.getCell(`AC${value_plm_row}`).alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
+            worksheet.getCell(`AD${value_plm_row}`).value = ds_olr_colorset[0].s23_name;
+            worksheet.getCell(`AD${value_plm_row}`).alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
+            worksheet.getCell(`AE${value_plm_row}`).value = ds_olr_colorset[0].s24_name;
+            worksheet.getCell(`AE${value_plm_row}`).alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
+            worksheet.getCell(`AF${value_plm_row}`).value = ds_olr_colorset[0].s25_name;
+            worksheet.getCell(`AF${value_plm_row}`).alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
+            worksheet.getCell(`AG${value_plm_row}`).value = ds_olr_colorset[0].s26_name;
+            worksheet.getCell(`AG${value_plm_row}`).alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
+            worksheet.getCell(`AH${value_plm_row}`).value = ds_olr_colorset[0].s26_name;
+            worksheet.getCell(`AH${value_plm_row}`).alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
+            worksheet.getCell(`AI${value_plm_row}`).value = ds_olr_colorset[0].s28_name;
+            worksheet.getCell(`AI${value_plm_row}`).alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
+            worksheet.getCell(`AJ${value_plm_row}`).value = ds_olr_colorset[0].s29_name;
+            worksheet.getCell(`AJ${value_plm_row}`).alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
+            worksheet.getCell(`AK${value_plm_row}`).value = ds_olr_colorset[0].s30_name;
+            worksheet.getCell(`AK${value_plm_row}`).alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
+    
+          }
+        }
+        else
+        {
+          worksheet.getCell(`E${value_plm_row}`).value = "FLEX";
+          worksheet.getCell(`E${value_plm_row}`).alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
+          worksheet.getCell(`F${value_plm_row}`).value = "VPO";
+          worksheet.getCell(`F${value_plm_row}`).alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
+          worksheet.getCell(`G${value_plm_row}`).value = "TOTAL";
+          worksheet.getCell(`G${value_plm_row}`).alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
+          worksheet.getCell(`H${value_plm_row}`).value = "PRODUCTION PLANT";
+          worksheet.getCell(`H${value_plm_row}`).alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
+
+          if(ds_olr_colorset.length > 0){
+
+            worksheet.getCell(`I${value_plm_row}`).value = ds_olr_colorset[0].s1_name;
+            worksheet.getCell(`I${value_plm_row}`).alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
+            worksheet.getCell(`J${value_plm_row}`).value = ds_olr_colorset[0].s2_name;
+            worksheet.getCell(`J${value_plm_row}`).alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
+            worksheet.getCell(`K${value_plm_row}`).value = ds_olr_colorset[0].s3_name;
+            worksheet.getCell(`K${value_plm_row}`).alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
+            worksheet.getCell(`L${value_plm_row}`).value = ds_olr_colorset[0].s4_name;
+            worksheet.getCell(`L${value_plm_row}`).alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
+            worksheet.getCell(`M${value_plm_row}`).value = ds_olr_colorset[0].s5_name;
+            worksheet.getCell(`M${value_plm_row}`).alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
+            worksheet.getCell(`N${value_plm_row}`).value = ds_olr_colorset[0].s6_name;
+            worksheet.getCell(`N${value_plm_row}`).alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
+            worksheet.getCell(`O${value_plm_row}`).value = ds_olr_colorset[0].s7_name;
+            worksheet.getCell(`O${value_plm_row}`).alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
+            worksheet.getCell(`P${value_plm_row}`).value = ds_olr_colorset[0].s8_name;
+            worksheet.getCell(`P${value_plm_row}`).alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
+            worksheet.getCell(`Q${value_plm_row}`).value = ds_olr_colorset[0].s9_name;
+            worksheet.getCell(`Q${value_plm_row}`).alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
+            worksheet.getCell(`R${value_plm_row}`).value = ds_olr_colorset[0].s10_name;
+            worksheet.getCell(`R${value_plm_row}`).alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
+            worksheet.getCell(`S${value_plm_row}`).value = ds_olr_colorset[0].s11_name;
+            worksheet.getCell(`S${value_plm_row}`).alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
+            worksheet.getCell(`T${value_plm_row}`).value = ds_olr_colorset[0].s12_name;
+            worksheet.getCell(`T${value_plm_row}`).alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
+            worksheet.getCell(`U${value_plm_row}`).value = ds_olr_colorset[0].s13_name;
+            worksheet.getCell(`U${value_plm_row}`).alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
+            worksheet.getCell(`V${value_plm_row}`).value = ds_olr_colorset[0].s14_name;
+            worksheet.getCell(`V${value_plm_row}`).alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
+            worksheet.getCell(`W${value_plm_row}`).value = ds_olr_colorset[0].s15_name;
+            worksheet.getCell(`W${value_plm_row}`).alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
+            worksheet.getCell(`X${value_plm_row}`).value = ds_olr_colorset[0].s16_name;
+            worksheet.getCell(`X${value_plm_row}`).alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
+            worksheet.getCell(`Y${value_plm_row}`).value = ds_olr_colorset[0].s17_name;
+            worksheet.getCell(`Y${value_plm_row}`).alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
+            worksheet.getCell(`Z${value_plm_row}`).value = ds_olr_colorset[0].s18_name;
+            worksheet.getCell(`Z${value_plm_row}`).alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
+            worksheet.getCell(`AA${value_plm_row}`).value = ds_olr_colorset[0].s19_name;
+            worksheet.getCell(`AA${value_plm_row}`).alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
+            worksheet.getCell(`AB${value_plm_row}`).value = ds_olr_colorset[0].s20_name;
+            worksheet.getCell(`AB${value_plm_row}`).alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
+            worksheet.getCell(`AC${value_plm_row}`).value = ds_olr_colorset[0].s21_name;
+            worksheet.getCell(`AC${value_plm_row}`).alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
+            worksheet.getCell(`AD${value_plm_row}`).value = ds_olr_colorset[0].s22_name;
+            worksheet.getCell(`AD${value_plm_row}`).alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
+            worksheet.getCell(`AE${value_plm_row}`).value = ds_olr_colorset[0].s23_name;
+            worksheet.getCell(`AE${value_plm_row}`).alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
+            worksheet.getCell(`AF${value_plm_row}`).value = ds_olr_colorset[0].s24_name;
+            worksheet.getCell(`AF${value_plm_row}`).alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
+            worksheet.getCell(`AG${value_plm_row}`).value = ds_olr_colorset[0].s25_name;
+            worksheet.getCell(`AG${value_plm_row}`).alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
+            worksheet.getCell(`AH${value_plm_row}`).value = ds_olr_colorset[0].s26_name;
+            worksheet.getCell(`AH${value_plm_row}`).alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
+            worksheet.getCell(`AI${value_plm_row}`).value = ds_olr_colorset[0].s26_name;
+            worksheet.getCell(`AI${value_plm_row}`).alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
+            worksheet.getCell(`AJ${value_plm_row}`).value = ds_olr_colorset[0].s28_name;
+            worksheet.getCell(`AJ${value_plm_row}`).alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
+            worksheet.getCell(`AK${value_plm_row}`).value = ds_olr_colorset[0].s29_name;
+            worksheet.getCell(`AK${value_plm_row}`).alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
+            worksheet.getCell(`AL${value_plm_row}`).value = ds_olr_colorset[0].s30_name;
+            worksheet.getCell(`AL${value_plm_row}`).alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
+    
+        }
+        
+        
         }
 
         //Create Table For OLR all Data
@@ -2493,43 +2864,90 @@ function CreateNew()
         ds_olr_colorset.map((row) => {
           
           value_plm_row = value_plm_row + 1;
-          worksheet.getCell(`A${value_plm_row}`).value = row.graphic;
-          worksheet.getCell(`B${value_plm_row}`).value = row.wash_dye;
-          worksheet.getCell(`C${value_plm_row}`).value = row.garmentway;
-          worksheet.getCell(`D${value_plm_row}`).value = row.color;
-          worksheet.getCell(`E${value_plm_row}`).value = row.flex;
-          worksheet.getCell(`F${value_plm_row}`).value = row.sub_total;
-          worksheet.getCell(`G${value_plm_row}`).value = row.prod_plant;
-          worksheet.getCell(`H${value_plm_row}`).value = row.s1_qty;
-          worksheet.getCell(`I${value_plm_row}`).value = row.s2_qty;
-          worksheet.getCell(`J${value_plm_row}`).value = row.s3_qty;
-          worksheet.getCell(`K${value_plm_row}`).value = row.s4_qty;
-          worksheet.getCell(`L${value_plm_row}`).value = row.s5_qty;
-          worksheet.getCell(`M${value_plm_row}`).value = row.s6_qty;
-          worksheet.getCell(`N${value_plm_row}`).value = row.s7_qty;
-          worksheet.getCell(`O${value_plm_row}`).value = row.s8_qty;
-          worksheet.getCell(`P${value_plm_row}`).value = row.s9_qty;
-          worksheet.getCell(`Q${value_plm_row}`).value = row.s10_qty;
-          worksheet.getCell(`R${value_plm_row}`).value = row.s11_qty;
-          worksheet.getCell(`S${value_plm_row}`).value = row.s12_qty;
-          worksheet.getCell(`T${value_plm_row}`).value = row.s13_qty;
-          worksheet.getCell(`U${value_plm_row}`).value = row.s14_qty;
-          worksheet.getCell(`V${value_plm_row}`).value = row.s15_qty;
-          worksheet.getCell(`W${value_plm_row}`).value = row.s16_qty;
-          worksheet.getCell(`X${value_plm_row}`).value = row.s17_qty;
-          worksheet.getCell(`Y${value_plm_row}`).value = row.s18_qty;
-          worksheet.getCell(`Z${value_plm_row}`).value = row.s19_qty;
-          worksheet.getCell(`AA${value_plm_row}`).value = row.s20_qty;
-          worksheet.getCell(`AB${value_plm_row}`).value = row.s21_qty;
-          worksheet.getCell(`AC${value_plm_row}`).value = row.s22_qty;
-          worksheet.getCell(`AD${value_plm_row}`).value = row.s23_qty;
-          worksheet.getCell(`AE${value_plm_row}`).value = row.s24_qty;
-          worksheet.getCell(`AF${value_plm_row}`).value = row.s25_qty;
-          worksheet.getCell(`AG${value_plm_row}`).value = row.s26_qty;
-          worksheet.getCell(`AH${value_plm_row}`).value = row.s27_qty;
-          worksheet.getCell(`AI${value_plm_row}`).value = row.s28_qty;
-          worksheet.getCell(`AJ${value_plm_row}`).value = row.s29_qty;
-          worksheet.getCell(`AK${value_plm_row}`).value = row.s30_qty;
+
+          if(var_customer.toUpperCase() === "ARITZIA")
+          {
+            worksheet.getCell(`A${value_plm_row}`).value = row.graphic;
+            worksheet.getCell(`B${value_plm_row}`).value = row.wash_dye;
+            worksheet.getCell(`C${value_plm_row}`).value = row.garmentway;
+            worksheet.getCell(`D${value_plm_row}`).value = row.color;
+            worksheet.getCell(`E${value_plm_row}`).value = row.vpono;
+            worksheet.getCell(`F${value_plm_row}`).value = row.sub_total;
+            worksheet.getCell(`G${value_plm_row}`).value = row.prod_plant;
+            worksheet.getCell(`H${value_plm_row}`).value = row.s1_qty;
+            worksheet.getCell(`I${value_plm_row}`).value = row.s2_qty;
+            worksheet.getCell(`J${value_plm_row}`).value = row.s3_qty;
+            worksheet.getCell(`K${value_plm_row}`).value = row.s4_qty;
+            worksheet.getCell(`L${value_plm_row}`).value = row.s5_qty;
+            worksheet.getCell(`M${value_plm_row}`).value = row.s6_qty;
+            worksheet.getCell(`N${value_plm_row}`).value = row.s7_qty;
+            worksheet.getCell(`O${value_plm_row}`).value = row.s8_qty;
+            worksheet.getCell(`P${value_plm_row}`).value = row.s9_qty;
+            worksheet.getCell(`Q${value_plm_row}`).value = row.s10_qty;
+            worksheet.getCell(`R${value_plm_row}`).value = row.s11_qty;
+            worksheet.getCell(`S${value_plm_row}`).value = row.s12_qty;
+            worksheet.getCell(`T${value_plm_row}`).value = row.s13_qty;
+            worksheet.getCell(`U${value_plm_row}`).value = row.s14_qty;
+            worksheet.getCell(`V${value_plm_row}`).value = row.s15_qty;
+            worksheet.getCell(`W${value_plm_row}`).value = row.s16_qty;
+            worksheet.getCell(`X${value_plm_row}`).value = row.s17_qty;
+            worksheet.getCell(`Y${value_plm_row}`).value = row.s18_qty;
+            worksheet.getCell(`Z${value_plm_row}`).value = row.s19_qty;
+            worksheet.getCell(`AA${value_plm_row}`).value = row.s20_qty;
+            worksheet.getCell(`AB${value_plm_row}`).value = row.s21_qty;
+            worksheet.getCell(`AC${value_plm_row}`).value = row.s22_qty;
+            worksheet.getCell(`AD${value_plm_row}`).value = row.s23_qty;
+            worksheet.getCell(`AE${value_plm_row}`).value = row.s24_qty;
+            worksheet.getCell(`AF${value_plm_row}`).value = row.s25_qty;
+            worksheet.getCell(`AG${value_plm_row}`).value = row.s26_qty;
+            worksheet.getCell(`AH${value_plm_row}`).value = row.s27_qty;
+            worksheet.getCell(`AI${value_plm_row}`).value = row.s28_qty;
+            worksheet.getCell(`AJ${value_plm_row}`).value = row.s29_qty;
+            worksheet.getCell(`AK${value_plm_row}`).value = row.s30_qty;
+          }
+          else
+          {
+            worksheet.getCell(`A${value_plm_row}`).value = row.graphic;
+            worksheet.getCell(`B${value_plm_row}`).value = row.wash_dye;
+            worksheet.getCell(`C${value_plm_row}`).value = row.garmentway;
+            worksheet.getCell(`D${value_plm_row}`).value = row.color;
+            worksheet.getCell(`E${value_plm_row}`).value = row.flex;
+            worksheet.getCell(`F${value_plm_row}`).value = row.vpono;
+            worksheet.getCell(`G${value_plm_row}`).value = row.sub_total;
+            worksheet.getCell(`H${value_plm_row}`).value = row.prod_plant;
+            worksheet.getCell(`I${value_plm_row}`).value = row.s1_qty;
+            worksheet.getCell(`J${value_plm_row}`).value = row.s2_qty;
+            worksheet.getCell(`K${value_plm_row}`).value = row.s3_qty;
+            worksheet.getCell(`L${value_plm_row}`).value = row.s4_qty;
+            worksheet.getCell(`M${value_plm_row}`).value = row.s5_qty;
+            worksheet.getCell(`N${value_plm_row}`).value = row.s6_qty;
+            worksheet.getCell(`O${value_plm_row}`).value = row.s7_qty;
+            worksheet.getCell(`P${value_plm_row}`).value = row.s8_qty;
+            worksheet.getCell(`Q${value_plm_row}`).value = row.s9_qty;
+            worksheet.getCell(`R${value_plm_row}`).value = row.s10_qty;
+            worksheet.getCell(`S${value_plm_row}`).value = row.s11_qty;
+            worksheet.getCell(`T${value_plm_row}`).value = row.s12_qty;
+            worksheet.getCell(`U${value_plm_row}`).value = row.s13_qty;
+            worksheet.getCell(`V${value_plm_row}`).value = row.s14_qty;
+            worksheet.getCell(`W${value_plm_row}`).value = row.s15_qty;
+            worksheet.getCell(`X${value_plm_row}`).value = row.s16_qty;
+            worksheet.getCell(`Y${value_plm_row}`).value = row.s17_qty;
+            worksheet.getCell(`Z${value_plm_row}`).value = row.s18_qty;
+            worksheet.getCell(`AA${value_plm_row}`).value = row.s19_qty;
+            worksheet.getCell(`AB${value_plm_row}`).value = row.s20_qty;
+            worksheet.getCell(`AC${value_plm_row}`).value = row.s21_qty;
+            worksheet.getCell(`AD${value_plm_row}`).value = row.s22_qty;
+            worksheet.getCell(`AE${value_plm_row}`).value = row.s23_qty;
+            worksheet.getCell(`AF${value_plm_row}`).value = row.s24_qty;
+            worksheet.getCell(`AG${value_plm_row}`).value = row.s25_qty;
+            worksheet.getCell(`AH${value_plm_row}`).value = row.s26_qty;
+            worksheet.getCell(`AI${value_plm_row}`).value = row.s27_qty;
+            worksheet.getCell(`AJ${value_plm_row}`).value = row.s28_qty;
+            worksheet.getCell(`AK${value_plm_row}`).value = row.s29_qty;
+            worksheet.getCell(`AL${value_plm_row}`).value = row.s30_qty;
+          }
+
+          
           return true;
         })
 
@@ -2551,18 +2969,22 @@ function CreateNew()
         worksheet.getCell(`E${value_plm_row}`).alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
         worksheet.getCell(`F${value_plm_row}`).value = "BODY PART / PLACEMENT";
         worksheet.getCell(`F${value_plm_row}`).alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
-        worksheet.getCell(`G${value_plm_row}`).value = "COLOR CODE";
+        worksheet.getCell(`G${value_plm_row}`).value = "GMT. COLOR";
         worksheet.getCell(`G${value_plm_row}`).alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
-        worksheet.getCell(`H${value_plm_row}`).value = "PRICE";
+        worksheet.getCell(`H${value_plm_row}`).value = "COLOR CODE";
         worksheet.getCell(`H${value_plm_row}`).alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
-        worksheet.getCell(`I${value_plm_row}`).value = "ORDERING";
+        worksheet.getCell(`I${value_plm_row}`).value = "VPO NO";
         worksheet.getCell(`I${value_plm_row}`).alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
-        worksheet.getCell(`J${value_plm_row}`).value = "REVISED ORDERING 1";
+        worksheet.getCell(`J${value_plm_row}`).value = "PRICE";
         worksheet.getCell(`J${value_plm_row}`).alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
-        worksheet.getCell(`K${value_plm_row}`).value = "REVISED ORDERING 2";
+        worksheet.getCell(`K${value_plm_row}`).value = "ORDERING";
         worksheet.getCell(`K${value_plm_row}`).alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
-        worksheet.getCell(`L${value_plm_row}`).value = "REVISED ORDERING 3";
+        worksheet.getCell(`L${value_plm_row}`).value = "REVISED ORDERING 1";
         worksheet.getCell(`L${value_plm_row}`).alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
+        worksheet.getCell(`M${value_plm_row}`).value = "REVISED ORDERING 2";
+        worksheet.getCell(`M${value_plm_row}`).alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
+        worksheet.getCell(`N${value_plm_row}`).value = "REVISED ORDERING 3";
+        worksheet.getCell(`N${value_plm_row}`).alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
         
         
         //Create Table For PLM all Data
@@ -2576,12 +2998,14 @@ function CreateNew()
           worksheet.getCell(`D${value_plm_row}`).value = row.plm_colorway_type;
           worksheet.getCell(`E${value_plm_row}`).value = row.plm_cw;
           worksheet.getCell(`F${value_plm_row}`).value = row.plm_placement;
-          worksheet.getCell(`G${value_plm_row}`).value = row.plm_color;
-          worksheet.getCell(`H${value_plm_row}`).value = row.item_price;
-          worksheet.getCell(`I${value_plm_row}`).value = row.item_ordering;
-          worksheet.getCell(`J${value_plm_row}`).value = row.item_order_rev1;
-          worksheet.getCell(`K${value_plm_row}`).value = row.item_order_rev2;
-          worksheet.getCell(`L${value_plm_row}`).value = row.item_order_rev3;
+          worksheet.getCell(`G${value_plm_row}`).value = row.cw_name;
+          worksheet.getCell(`H${value_plm_row}`).value = row.plm_color;
+          worksheet.getCell(`I${value_plm_row}`).value = row.vpono;
+          worksheet.getCell(`J${value_plm_row}`).value = row.item_price;
+          worksheet.getCell(`K${value_plm_row}`).value = row.item_ordering;
+          worksheet.getCell(`L${value_plm_row}`).value = row.item_order_rev1;
+          worksheet.getCell(`M${value_plm_row}`).value = row.item_order_rev2;
+          worksheet.getCell(`N${value_plm_row}`).value = row.item_order_rev3;
           return true;
         })
 
@@ -2595,6 +3019,114 @@ function CreateNew()
         });
         
       };
+
+      async function SyncGrapgic()
+      {
+        setisloading(true);
+
+        await fetch(`${apiurl}/fabricyy/syncgraphics/${fabyyid}`)
+          .then(res_1 => res_1.json())
+          .then(response_1 => { 
+
+              if(response_1.Type === "SUCCESS")
+              {
+                fetch(`${apiurl}/fabricyy/getolrdata/${fabyyid}`)
+                .then(res_5 => res_5.json())
+                .then(response_5 => 
+                  {
+                    if(response_5.Type === "SUCCESS")
+                    {
+                      setds_olr_colorset(response_5.Data);
+                      setisloading(false);
+                      notification['success']({
+                        message: 'Success Notification',
+                        description:response_1.Msg ,
+                        style:{color: '#000',border: '1px solid #ccffcc',backgroundColor: '#99ff66'},
+                      });
+                    }
+                    else
+                    {
+                      setisloading(false);
+                    }
+                  })
+                  
+              }
+              else
+              {
+                setisloading(false);
+                  notification['error']({
+                      message: 'Data Error',
+                      description: 'Data Loading Error.',
+                      style:{color: '#000',border: '1px solid #ff6961',backgroundColor: '#ffa39e'},
+                    });
+              }
+
+              
+          })
+          .catch(error_1 => {
+            setisloading(false);
+              notification['error']({
+                  message: 'Data Error',
+                  description: error_1,
+                  style:{color: '#000',border: '1px solid #ff6961',backgroundColor: '#ffa39e'},
+                });
+
+          }); 
+      }
+
+      async function SyncDyewash()
+      {
+        setisloading(true);
+
+        await fetch(`${apiurl}/fabricyy/syncdyewash/${fabyyid}`)
+          .then(res_1 => res_1.json())
+          .then(response_1 => { 
+
+              if(response_1.Type === "SUCCESS")
+              {
+                fetch(`${apiurl}/fabricyy/getolrdata/${fabyyid}`)
+                .then(res_5 => res_5.json())
+                .then(response_5 => 
+                  {
+                    if(response_5.Type === "SUCCESS")
+                    {
+                      setds_olr_colorset(response_5.Data);
+                      setisloading(false);
+                      notification['success']({
+                        message: 'Success Notification',
+                        description:response_1.Msg ,
+                        style:{color: '#000',border: '1px solid #ccffcc',backgroundColor: '#99ff66'},
+                      });
+                    }
+                    else
+                    {
+                      setisloading(false);
+                    }
+                  })
+                  
+              }
+              else
+              {
+                setisloading(false);
+                  notification['error']({
+                      message: 'Data Error',
+                      description: 'Data Loading Error.',
+                      style:{color: '#000',border: '1px solid #ff6961',backgroundColor: '#ffa39e'},
+                    });
+              }
+
+              
+          })
+          .catch(error_1 => {
+            setisloading(false);
+              notification['error']({
+                  message: 'Data Error',
+                  description: error_1,
+                  style:{color: '#000',border: '1px solid #ff6961',backgroundColor: '#ffa39e'},
+                });
+
+          }); 
+      }
 
     return( <Layout style={{ minHeight: '100vh' }}>
     <Layout className="site-layout">
@@ -2724,6 +3256,7 @@ function CreateNew()
                 } 
               </tbody>
             </table>
+            <p style={{color:"purple",paddingLeft:"5px"}}>{ds_olr_colorset.length.toString()} Items in OLR List</p>
 
 
             <hr/>
@@ -2732,7 +3265,7 @@ function CreateNew()
               <thead style={{fontSize:"10px",textAlign:"center"}}>
                 <tr>
                   <th colSpan={5}></th>
-                  <th colSpan={4}><Button type="primary" onClick={()=>setisOpenPlmColorways(true)}>PLM GARMENT COLORWAYS</Button></th>
+                  <th colSpan={6}><Button type="primary" onClick={()=>setisOpenPlmColorways(true)}>PLM GARMENT COLORWAYS</Button></th>
                   <th style={{width:"5%",fontSize:"20px"}}><CalendarTwoTone onClick={()=> setisOpenOrder1(true)} style={{cursor:"pointer"}} twoToneColor="#eb2f96" /></th>
                   <th style={{width:"5%",fontSize:"20px"}}><CalendarTwoTone onClick={()=> setisOpenOrder2(true)} style={{cursor:"pointer"}}  twoToneColor="#eb2f96" /></th>
                   <th style={{width:"5%",fontSize:"20px"}}><CalendarTwoTone onClick={()=> setisOpenOrder3(true)} style={{cursor:"pointer"}}  twoToneColor="#eb2f96" /></th>
@@ -2745,8 +3278,9 @@ function CreateNew()
                   <th style={{width:"5%",borderStyle:"solid",borderWidth:"1px"}}>FABRIC TYPE</th>
                   <th style={{width:"5%",borderStyle:"solid",borderWidth:"1px"}}>CUTTABLE WIDTH (INCHES)</th>
                   <th style={{width:"10%",borderStyle:"solid",borderWidth:"1px"}}>BODY PART / PLACEMENT</th>
-                  <th style={{width:"7%",borderStyle:"solid",borderWidth:"1px"}}>GMT. COLOR</th>
+                  <th style={{width:"5%",borderStyle:"solid",borderWidth:"1px"}}>GMT. COLOR</th>
                   <th style={{width:"5%",borderStyle:"solid",borderWidth:"1px"}}>COLOR CODE</th>
+                  <th style={{width:"5%",borderStyle:"solid",borderWidth:"1px"}}>VPONO</th>
                   <th style={{width:"3%",borderStyle:"solid",borderWidth:"1px"}}>#EDIT</th>
                   <th style={{width:"5%",borderStyle:"solid",borderWidth:"1px"}}>PRICE</th>
                   <th style={{width:"5%",borderStyle:"solid",borderWidth:"1px"}}>ORDERING</th>
@@ -2761,7 +3295,7 @@ function CreateNew()
                 } 
               </tbody>
             </table>
-            <p style={{color:"purple",paddingLeft:"5px"}}>{ds_plm_bomfull.length.toString()} Items in PLM Bom</p>
+            <p style={{color:"purple",paddingLeft:"5px"}}>{ds_plm_bomfull.length.toString()} Items in PLM List</p>
             </Col>
 
             <AntdDModal visible={isOpenPlmColorways} title="PLM Garmet Colorways in PLM Order" onOk={()=>setisOpenPlmColorways(false)} onCancel={()=>setisOpenPlmColorways(false)}>
@@ -2796,7 +3330,9 @@ function CreateNew()
                     <p style={{fontSize:"12px"}}><b>SUPPLIER : </b>{sel_Bom_Supplier}</p>
                     <p style={{fontSize:"12px"}}><b>FABRIC TYPE : </b>{sel_Bom_Fabtype}</p>
                     <p style={{fontSize:"12px"}}><b>BODY PART / PLACEMENT : </b>{sel_Bom_Placement}</p>
+                    <p style={{fontSize:"12px"}}><b>GARMENT COLOR : </b>{sel_Bom_GmtColor}</p>
                     <p style={{fontSize:"12px"}}><b>COLOR CODE : </b>{sel_Bom_Color}</p>
+                    <p style={{fontSize:"12px"}}><b>VPO : </b>{sel_Bom_Vpo}</p>
                     <p style={{fontSize:"12px"}}><b>PRICE : </b>{sel_Bom_Price}</p>
                     <p style={{fontSize:"12px"}}><b>ORDERING : </b>{sel_Bom_Order1}</p>
                     <p style={{fontSize:"12px"}}><b>REVISED ORDERING 1 : </b>{sel_Bom_Order2}</p>

@@ -226,7 +226,7 @@ function CreateNew()
             <br/><br/>
 
             <Typography.Text type="info">2. Customer Style No **</Typography.Text><br/>
-            <Input placeholder="OLR Style No" maxLength={12} onChange={onChangeStyleNo}/>
+            <Input placeholder="OLR Style No" maxLength={30} onChange={onChangeStyleNo}/>
             <br/><br/>
 
             <Typography.Text type="info">3. M3 Style No **</Typography.Text><br/>

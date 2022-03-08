@@ -7,8 +7,8 @@ import { Redirect } from 'react-router-dom';
 
 function App() {
 
-   //localStorage.setItem('session_api','http://bff-sr-01:8280');
-  localStorage.setItem('session_api','http://localhost:1500');
+  localStorage.setItem('session_api','http://bff-sr-01:8280');
+  //localStorage.setItem('session_api','http://localhost:1500');
   var apiurl = localStorage.getItem('session_api');
   
 
@@ -99,7 +99,7 @@ function App() {
         <img src={logo} className="App-logo" alt="logo" />
         <br/>
         <br/>
-<Form
+      <Form
       name="basic"
       labelCol={{ span: 8 }}
       wrapperCol={{ span: 16 }}
@@ -130,7 +130,7 @@ function App() {
         </Button>
       </Form.Item>
     </Form>
-        
+        <p style={{color:"#343434"}}>Ver 22.3.9</p>
     </Card>
       </header>
     </div>
