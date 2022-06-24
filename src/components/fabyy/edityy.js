@@ -332,29 +332,26 @@ function CreateNew()
            
   
           /* Find desired cells */
-          var Article_cell = Aritzia_worksheet["I1"];
+          var Purchasing_Document_cell = Aritzia_worksheet["B1"];
           var Vendor_Article_Number_cell = Aritzia_worksheet["J1"];
           var Short_Text_cell = Aritzia_worksheet["K1"];
           var Aritzia_season_cell = Aritzia_worksheet["C1"];
           var Colour_cell = Aritzia_worksheet["L1"];
           var Size_cell = Aritzia_worksheet["M1"];
           var Order_Quantity_cell = Aritzia_worksheet["S1"];
-  
-   
-          
           
               // `rows` is an array of rows
               // each row being an array of cells.
   
               let OLRITEMS = [];
   
-              if ((Article_cell ? Article_cell.v : undefined) !== "Article") 
+              if ((Purchasing_Document_cell ? Purchasing_Document_cell.v : undefined) !== "Purchasing Document") 
               {
                 setisloading(false);
   
                 notification['error']({
                   message: 'Error',
-                  description: 'This Excel File Not In Correct Format. Article Can not Identifired.',
+                  description: 'This Excel File Not In Correct Format. Purchasing Document Can not Identifired.',
                   style:{color: '#000',border: '1px solid #ff6961',backgroundColor: '#ffa39e'},
                 });
                 return;
@@ -432,7 +429,7 @@ function CreateNew()
                     
                     if(String(item['Vendor Article Number']).toLowerCase() === String(var_styleno).toLowerCase() && String(item['Colour']).toLowerCase() !== "" && String(item['Colour']).toLowerCase() !== "undefined")
                     {
-                      OLRITEMS.push({CUSTNAME: var_customer.toUpperCase() ,VPONO: item['Article'],TECHPACKNO: item['Vendor Article Number'],MASTSTYLEDESC: item['Short Text'],CUSTSTYLE: item['Vendor Article Number'],CUSTSTYLEDESC: item['Short Text'],MASTCOLORDESC: item['Colour'],CUSTSIZEDESC: item['Size'],ORDERQTY: item['Order Quantity'],SEASON: item['Season']})
+                      OLRITEMS.push({CUSTNAME: var_customer.toUpperCase() ,VPONO: item['Purchasing Document'],DIVISIONCODE:'ARITZIA',TECHPACKNO: item['Vendor Article Number'],MASTSTYLEDESC: item['Short Text'],CUSTSTYLE: item['Vendor Article Number'],CUSTSTYLEDESC: item['Short Text'],MASTCOLORDESC: item['Colour'],MASTSIZEDESC: item['Size'],ORDERQTY: item['Order Quantity'],SEASON: item['Season']})
                       
                     }
                     return null;
@@ -600,6 +597,7 @@ function CreateNew()
   
           /* Find desired cells */
           var customer_cell = worksheet["B1"];
+          var division_cell = worksheet["O1"];
           var vpono_cell = worksheet["T1"];
           var techpackno_cell = worksheet["AC1"];
           var masterstyledesc_cell = worksheet["AE1"];
@@ -607,7 +605,7 @@ function CreateNew()
           var custstyledesc_cell = worksheet["AG1"];
           var season_cell = worksheet["BK1"];
           var mastcolordesc_cell = worksheet["AI1"];
-          var custsizedesc_cell = worksheet["AO1"];
+          var mastsizedesc_cell = worksheet["AK1"];
           var orderqty_cell = worksheet["AP1"];
   
    
@@ -624,7 +622,18 @@ function CreateNew()
   
                 notification['error']({
                   message: 'Error',
-                  description: 'This Excel File Not In Correct Format. CUSTNAME Can not Identifired.',
+                  description: 'This Excel File Not In Correct Format. CUSTNAME Can not Identifired in B1 Cell.',
+                  style:{color: '#000',border: '1px solid #ff6961',backgroundColor: '#ffa39e'},
+                });
+                return;
+              }
+              else if ((division_cell ? division_cell.v : undefined) !== "DIVISIONCODE") 
+              {
+                setisloading(false);
+  
+                notification['error']({
+                  message: 'Error',
+                  description: 'This Excel File Not In Correct Format. DIVISIONCODE Can not Identifired in O1 Cell.',
                   style:{color: '#000',border: '1px solid #ff6961',backgroundColor: '#ffa39e'},
                 });
                 return;
@@ -635,7 +644,7 @@ function CreateNew()
   
                 notification['error']({
                   message: 'Error',
-                  description: 'This Excel File Not In Correct Format. VPONO Can not Identifired.',
+                  description: 'This Excel File Not In Correct Format. VPONO Can not Identifired in T1 Cell.',
                   style:{color: '#000',border: '1px solid #ff6961',backgroundColor: '#ffa39e'},
                 });
                 return;
@@ -646,7 +655,7 @@ function CreateNew()
   
                 notification['error']({
                   message: 'Error',
-                  description: 'This Excel File Not In Correct Format. TECHPACKNO Can not Identifired.',
+                  description: 'This Excel File Not In Correct Format. TECHPACKNO Can not Identifired in AC1 Cell.',
                   style:{color: '#000',border: '1px solid #ff6961',backgroundColor: '#ffa39e'},
                 });
                 return;
@@ -657,7 +666,7 @@ function CreateNew()
   
                   notification['error']({
                     message: 'Error',
-                    description: 'This Excel File Not In Correct Format. MASTSTYLEDESC Can not Identifired.',
+                    description: 'This Excel File Not In Correct Format. MASTSTYLEDESC Can not Identifired in AE1 Cell.',
                     style:{color: '#000',border: '1px solid #ff6961',backgroundColor: '#ffa39e'},
                   });
                   return;
@@ -668,7 +677,7 @@ function CreateNew()
   
                 notification['error']({
                   message: 'Error',
-                  description: 'This Excel File Not In Correct Format. CUSTSTYLE Can not Identifired.',
+                  description: 'This Excel File Not In Correct Format. CUSTSTYLE Can not Identifired in AF1 Cell.',
                   style:{color: '#000',border: '1px solid #ff6961',backgroundColor: '#ffa39e'},
                 });
                 return;
@@ -679,7 +688,7 @@ function CreateNew()
   
                 notification['error']({
                   message: 'Error',
-                  description: 'This Excel File Not In Correct Format. CUSTSTYLEDESC Can not Identifired.',
+                  description: 'This Excel File Not In Correct Format. CUSTSTYLEDESC Can not Identifired in AG1 Cell.',
                   style:{color: '#000',border: '1px solid #ff6961',backgroundColor: '#ffa39e'},
                 });
                 return;
@@ -690,7 +699,7 @@ function CreateNew()
   
                 notification['error']({
                   message: 'Error',
-                  description: 'This Excel File Not In Correct Format. SEASON Can not Identifired.',
+                  description: 'This Excel File Not In Correct Format. SEASON Can not Identifired in BK1 Cell.',
                   style:{color: '#000',border: '1px solid #ff6961',backgroundColor: '#ffa39e'},
                 });
                 return;
@@ -701,18 +710,18 @@ function CreateNew()
   
                 notification['error']({
                   message: 'Error',
-                  description: 'This Excel File Not In Correct Format. MASTCOLORDESC Can not Identifired.',
+                  description: 'This Excel File Not In Correct Format. MASTCOLORDESC Can not Identifired in AI1 Cell.',
                   style:{color: '#000',border: '1px solid #ff6961',backgroundColor: '#ffa39e'},
                 });
                 return;
               }
-              else if ((custsizedesc_cell ? custsizedesc_cell.v : undefined) !== "CUSTSIZEDESC") 
+              else if ((mastsizedesc_cell ? mastsizedesc_cell.v : undefined) !== "MASTSIZEDESC") 
               {
                 setisloading(false);
   
                 notification['error']({
                   message: 'Error',
-                  description: 'This Excel File Not In Correct Format. CUSTSIZEDESC Can not Identifired.',
+                  description: 'This Excel File Not In Correct Format. MASTSIZEDESC Can not Identifired in AK1 Cell.',
                   style:{color: '#000',border: '1px solid #ff6961',backgroundColor: '#ffa39e'},
                 });
                 return;
@@ -723,7 +732,7 @@ function CreateNew()
   
                 notification['error']({
                   message: 'Error',
-                  description: 'This Excel File Not In Correct Format. ORDERQTY Can not Identifired.',
+                  description: 'This Excel File Not In Correct Format. ORDERQTY Can not Identifired in AP1 Cell.',
                   style:{color: '#000',border: '1px solid #ff6961',backgroundColor: '#ffa39e'},
                 });
                 return;
@@ -734,7 +743,7 @@ function CreateNew()
                   {
                     if(String(item.TECHPACKNO).toLowerCase() === String(var_styleno).toLowerCase())
                     {
-                      OLRITEMS.push({CUSTNAME: item.CUSTNAME,VPONO: item.VPONO,TECHPACKNO: item.TECHPACKNO,MASTSTYLEDESC: item.MASTSTYLEDESC,CUSTSTYLE: item.CUSTSTYLE,CUSTSTYLEDESC: item.CUSTSTYLEDESC,MASTCOLORDESC: item.MASTCOLORDESC,CUSTSIZEDESC: item.CUSTSIZEDESC,ORDERQTY: item.ORDERQTY,SEASON: item.SEASON})
+                      OLRITEMS.push({CUSTNAME: item.CUSTNAME,DIVISIONCODE: item.DIVISIONCODE,VPONO: item.VPONO,TECHPACKNO: item.TECHPACKNO,MASTSTYLEDESC: item.MASTSTYLEDESC,CUSTSTYLE: item.CUSTSTYLE,CUSTSTYLEDESC: item.CUSTSTYLEDESC,MASTCOLORDESC: item.MASTCOLORDESC,MASTSIZEDESC: item.MASTSIZEDESC,ORDERQTY: item.ORDERQTY,SEASON: item.SEASON})
                       
                     }
                     return null;
@@ -1828,9 +1837,11 @@ function CreateNew()
               <td>{row_value.color}</td>
               {
                 var_customer.toUpperCase() === "ARITZIA" ? (<></>) : (<td>{row_value.flex}</td>)
-              }
-              
+              } 
               <td>{row_value.vpono}</td>
+              {
+                var_customer.toUpperCase() === "ARITZIA" ? (<></>) : (<td>{row_value.division}</td>)
+              }
               {indents.map((row_tb) =><td>{row_tb}</td>)}
               <td>{row_value.sub_total}</td>
               <td>{row_value.prod_plant}</td>
@@ -1858,6 +1869,9 @@ function CreateNew()
             var_customer.toUpperCase() === "ARITZIA" ? (<></>) : (<th style={{width:"50px",borderStyle:"solid",borderWidth:"1px"}}>FLEX</th>)
           }
           <th style={{width:"50px",borderStyle:"solid",borderWidth:"1px"}}>VPO</th>
+          {
+            var_customer.toUpperCase() === "ARITZIA" ? (<></>) : (<th style={{width:"50px",borderStyle:"solid",borderWidth:"1px"}}>DIVI.</th>)
+          }
           {
             ds_olr_sizeset.map((row_tb) =><th style={{width:"75px",borderStyle:"solid",borderWidth:"1px"}}>{row_tb.sizename}</th>)
           }
@@ -2363,7 +2377,6 @@ function CreateNew()
         
       }
 
-
       async function GetBomItemforEdit(value)
       {
         if(value === "")
@@ -2786,73 +2799,75 @@ function CreateNew()
           worksheet.getCell(`E${value_plm_row}`).alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
           worksheet.getCell(`F${value_plm_row}`).value = "VPO";
           worksheet.getCell(`F${value_plm_row}`).alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
-          worksheet.getCell(`G${value_plm_row}`).value = "TOTAL";
+          worksheet.getCell(`G${value_plm_row}`).value = "DIVISION";
           worksheet.getCell(`G${value_plm_row}`).alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
-          worksheet.getCell(`H${value_plm_row}`).value = "PRODUCTION PLANT";
+          worksheet.getCell(`H${value_plm_row}`).value = "TOTAL";
           worksheet.getCell(`H${value_plm_row}`).alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
+          worksheet.getCell(`I${value_plm_row}`).value = "PRODUCTION PLANT";
+          worksheet.getCell(`I${value_plm_row}`).alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
 
           if(ds_olr_colorset.length > 0){
 
-            worksheet.getCell(`I${value_plm_row}`).value = ds_olr_colorset[0].s1_name;
-            worksheet.getCell(`I${value_plm_row}`).alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
-            worksheet.getCell(`J${value_plm_row}`).value = ds_olr_colorset[0].s2_name;
+            worksheet.getCell(`J${value_plm_row}`).value = ds_olr_colorset[0].s1_name;
             worksheet.getCell(`J${value_plm_row}`).alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
-            worksheet.getCell(`K${value_plm_row}`).value = ds_olr_colorset[0].s3_name;
+            worksheet.getCell(`K${value_plm_row}`).value = ds_olr_colorset[0].s2_name;
             worksheet.getCell(`K${value_plm_row}`).alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
-            worksheet.getCell(`L${value_plm_row}`).value = ds_olr_colorset[0].s4_name;
+            worksheet.getCell(`L${value_plm_row}`).value = ds_olr_colorset[0].s3_name;
             worksheet.getCell(`L${value_plm_row}`).alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
-            worksheet.getCell(`M${value_plm_row}`).value = ds_olr_colorset[0].s5_name;
+            worksheet.getCell(`M${value_plm_row}`).value = ds_olr_colorset[0].s4_name;
             worksheet.getCell(`M${value_plm_row}`).alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
-            worksheet.getCell(`N${value_plm_row}`).value = ds_olr_colorset[0].s6_name;
+            worksheet.getCell(`N${value_plm_row}`).value = ds_olr_colorset[0].s5_name;
             worksheet.getCell(`N${value_plm_row}`).alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
-            worksheet.getCell(`O${value_plm_row}`).value = ds_olr_colorset[0].s7_name;
+            worksheet.getCell(`O${value_plm_row}`).value = ds_olr_colorset[0].s6_name;
             worksheet.getCell(`O${value_plm_row}`).alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
-            worksheet.getCell(`P${value_plm_row}`).value = ds_olr_colorset[0].s8_name;
+            worksheet.getCell(`P${value_plm_row}`).value = ds_olr_colorset[0].s7_name;
             worksheet.getCell(`P${value_plm_row}`).alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
-            worksheet.getCell(`Q${value_plm_row}`).value = ds_olr_colorset[0].s9_name;
+            worksheet.getCell(`Q${value_plm_row}`).value = ds_olr_colorset[0].s8_name;
             worksheet.getCell(`Q${value_plm_row}`).alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
-            worksheet.getCell(`R${value_plm_row}`).value = ds_olr_colorset[0].s10_name;
+            worksheet.getCell(`R${value_plm_row}`).value = ds_olr_colorset[0].s9_name;
             worksheet.getCell(`R${value_plm_row}`).alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
-            worksheet.getCell(`S${value_plm_row}`).value = ds_olr_colorset[0].s11_name;
+            worksheet.getCell(`S${value_plm_row}`).value = ds_olr_colorset[0].s10_name;
             worksheet.getCell(`S${value_plm_row}`).alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
-            worksheet.getCell(`T${value_plm_row}`).value = ds_olr_colorset[0].s12_name;
+            worksheet.getCell(`T${value_plm_row}`).value = ds_olr_colorset[0].s11_name;
             worksheet.getCell(`T${value_plm_row}`).alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
-            worksheet.getCell(`U${value_plm_row}`).value = ds_olr_colorset[0].s13_name;
+            worksheet.getCell(`U${value_plm_row}`).value = ds_olr_colorset[0].s12_name;
             worksheet.getCell(`U${value_plm_row}`).alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
-            worksheet.getCell(`V${value_plm_row}`).value = ds_olr_colorset[0].s14_name;
+            worksheet.getCell(`V${value_plm_row}`).value = ds_olr_colorset[0].s13_name;
             worksheet.getCell(`V${value_plm_row}`).alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
-            worksheet.getCell(`W${value_plm_row}`).value = ds_olr_colorset[0].s15_name;
+            worksheet.getCell(`W${value_plm_row}`).value = ds_olr_colorset[0].s14_name;
             worksheet.getCell(`W${value_plm_row}`).alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
-            worksheet.getCell(`X${value_plm_row}`).value = ds_olr_colorset[0].s16_name;
+            worksheet.getCell(`X${value_plm_row}`).value = ds_olr_colorset[0].s15_name;
             worksheet.getCell(`X${value_plm_row}`).alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
-            worksheet.getCell(`Y${value_plm_row}`).value = ds_olr_colorset[0].s17_name;
+            worksheet.getCell(`Y${value_plm_row}`).value = ds_olr_colorset[0].s16_name;
             worksheet.getCell(`Y${value_plm_row}`).alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
-            worksheet.getCell(`Z${value_plm_row}`).value = ds_olr_colorset[0].s18_name;
+            worksheet.getCell(`Z${value_plm_row}`).value = ds_olr_colorset[0].s17_name;
             worksheet.getCell(`Z${value_plm_row}`).alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
-            worksheet.getCell(`AA${value_plm_row}`).value = ds_olr_colorset[0].s19_name;
+            worksheet.getCell(`AA${value_plm_row}`).value = ds_olr_colorset[0].s18_name;
             worksheet.getCell(`AA${value_plm_row}`).alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
-            worksheet.getCell(`AB${value_plm_row}`).value = ds_olr_colorset[0].s20_name;
+            worksheet.getCell(`AB${value_plm_row}`).value = ds_olr_colorset[0].s19_name;
             worksheet.getCell(`AB${value_plm_row}`).alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
-            worksheet.getCell(`AC${value_plm_row}`).value = ds_olr_colorset[0].s21_name;
+            worksheet.getCell(`AC${value_plm_row}`).value = ds_olr_colorset[0].s20_name;
             worksheet.getCell(`AC${value_plm_row}`).alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
-            worksheet.getCell(`AD${value_plm_row}`).value = ds_olr_colorset[0].s22_name;
+            worksheet.getCell(`AD${value_plm_row}`).value = ds_olr_colorset[0].s21_name;
             worksheet.getCell(`AD${value_plm_row}`).alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
-            worksheet.getCell(`AE${value_plm_row}`).value = ds_olr_colorset[0].s23_name;
+            worksheet.getCell(`AE${value_plm_row}`).value = ds_olr_colorset[0].s22_name;
             worksheet.getCell(`AE${value_plm_row}`).alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
-            worksheet.getCell(`AF${value_plm_row}`).value = ds_olr_colorset[0].s24_name;
+            worksheet.getCell(`AF${value_plm_row}`).value = ds_olr_colorset[0].s23_name;
             worksheet.getCell(`AF${value_plm_row}`).alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
-            worksheet.getCell(`AG${value_plm_row}`).value = ds_olr_colorset[0].s25_name;
+            worksheet.getCell(`AG${value_plm_row}`).value = ds_olr_colorset[0].s24_name;
             worksheet.getCell(`AG${value_plm_row}`).alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
-            worksheet.getCell(`AH${value_plm_row}`).value = ds_olr_colorset[0].s26_name;
+            worksheet.getCell(`AH${value_plm_row}`).value = ds_olr_colorset[0].s25_name;
             worksheet.getCell(`AH${value_plm_row}`).alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
             worksheet.getCell(`AI${value_plm_row}`).value = ds_olr_colorset[0].s26_name;
             worksheet.getCell(`AI${value_plm_row}`).alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
-            worksheet.getCell(`AJ${value_plm_row}`).value = ds_olr_colorset[0].s28_name;
+            worksheet.getCell(`AJ${value_plm_row}`).value = ds_olr_colorset[0].s26_name;
             worksheet.getCell(`AJ${value_plm_row}`).alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
-            worksheet.getCell(`AK${value_plm_row}`).value = ds_olr_colorset[0].s29_name;
+            worksheet.getCell(`AK${value_plm_row}`).value = ds_olr_colorset[0].s28_name;
             worksheet.getCell(`AK${value_plm_row}`).alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
-            worksheet.getCell(`AL${value_plm_row}`).value = ds_olr_colorset[0].s30_name;
+            worksheet.getCell(`AL${value_plm_row}`).value = ds_olr_colorset[0].s29_name;
             worksheet.getCell(`AL${value_plm_row}`).alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
+            worksheet.getCell(`AM${value_plm_row}`).value = ds_olr_colorset[0].s30_name;
+            worksheet.getCell(`AM${value_plm_row}`).alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
     
         }
         
@@ -2913,38 +2928,39 @@ function CreateNew()
             worksheet.getCell(`D${value_plm_row}`).value = row.color;
             worksheet.getCell(`E${value_plm_row}`).value = row.flex;
             worksheet.getCell(`F${value_plm_row}`).value = row.vpono;
-            worksheet.getCell(`G${value_plm_row}`).value = row.sub_total;
-            worksheet.getCell(`H${value_plm_row}`).value = row.prod_plant;
-            worksheet.getCell(`I${value_plm_row}`).value = row.s1_qty;
-            worksheet.getCell(`J${value_plm_row}`).value = row.s2_qty;
-            worksheet.getCell(`K${value_plm_row}`).value = row.s3_qty;
-            worksheet.getCell(`L${value_plm_row}`).value = row.s4_qty;
-            worksheet.getCell(`M${value_plm_row}`).value = row.s5_qty;
-            worksheet.getCell(`N${value_plm_row}`).value = row.s6_qty;
-            worksheet.getCell(`O${value_plm_row}`).value = row.s7_qty;
-            worksheet.getCell(`P${value_plm_row}`).value = row.s8_qty;
-            worksheet.getCell(`Q${value_plm_row}`).value = row.s9_qty;
-            worksheet.getCell(`R${value_plm_row}`).value = row.s10_qty;
-            worksheet.getCell(`S${value_plm_row}`).value = row.s11_qty;
-            worksheet.getCell(`T${value_plm_row}`).value = row.s12_qty;
-            worksheet.getCell(`U${value_plm_row}`).value = row.s13_qty;
-            worksheet.getCell(`V${value_plm_row}`).value = row.s14_qty;
-            worksheet.getCell(`W${value_plm_row}`).value = row.s15_qty;
-            worksheet.getCell(`X${value_plm_row}`).value = row.s16_qty;
-            worksheet.getCell(`Y${value_plm_row}`).value = row.s17_qty;
-            worksheet.getCell(`Z${value_plm_row}`).value = row.s18_qty;
-            worksheet.getCell(`AA${value_plm_row}`).value = row.s19_qty;
-            worksheet.getCell(`AB${value_plm_row}`).value = row.s20_qty;
-            worksheet.getCell(`AC${value_plm_row}`).value = row.s21_qty;
-            worksheet.getCell(`AD${value_plm_row}`).value = row.s22_qty;
-            worksheet.getCell(`AE${value_plm_row}`).value = row.s23_qty;
-            worksheet.getCell(`AF${value_plm_row}`).value = row.s24_qty;
-            worksheet.getCell(`AG${value_plm_row}`).value = row.s25_qty;
-            worksheet.getCell(`AH${value_plm_row}`).value = row.s26_qty;
-            worksheet.getCell(`AI${value_plm_row}`).value = row.s27_qty;
-            worksheet.getCell(`AJ${value_plm_row}`).value = row.s28_qty;
-            worksheet.getCell(`AK${value_plm_row}`).value = row.s29_qty;
-            worksheet.getCell(`AL${value_plm_row}`).value = row.s30_qty;
+            worksheet.getCell(`G${value_plm_row}`).value = row.division;
+            worksheet.getCell(`H${value_plm_row}`).value = row.sub_total;
+            worksheet.getCell(`I${value_plm_row}`).value = row.prod_plant;
+            worksheet.getCell(`J${value_plm_row}`).value = row.s1_qty;
+            worksheet.getCell(`K${value_plm_row}`).value = row.s2_qty;
+            worksheet.getCell(`L${value_plm_row}`).value = row.s3_qty;
+            worksheet.getCell(`M${value_plm_row}`).value = row.s4_qty;
+            worksheet.getCell(`N${value_plm_row}`).value = row.s5_qty;
+            worksheet.getCell(`O${value_plm_row}`).value = row.s6_qty;
+            worksheet.getCell(`P${value_plm_row}`).value = row.s7_qty;
+            worksheet.getCell(`Q${value_plm_row}`).value = row.s8_qty;
+            worksheet.getCell(`R${value_plm_row}`).value = row.s9_qty;
+            worksheet.getCell(`S${value_plm_row}`).value = row.s10_qty;
+            worksheet.getCell(`T${value_plm_row}`).value = row.s11_qty;
+            worksheet.getCell(`U${value_plm_row}`).value = row.s12_qty;
+            worksheet.getCell(`V${value_plm_row}`).value = row.s13_qty;
+            worksheet.getCell(`W${value_plm_row}`).value = row.s14_qty;
+            worksheet.getCell(`X${value_plm_row}`).value = row.s15_qty;
+            worksheet.getCell(`Y${value_plm_row}`).value = row.s16_qty;
+            worksheet.getCell(`Z${value_plm_row}`).value = row.s17_qty;
+            worksheet.getCell(`AA${value_plm_row}`).value = row.s18_qty;
+            worksheet.getCell(`AB${value_plm_row}`).value = row.s19_qty;
+            worksheet.getCell(`AC${value_plm_row}`).value = row.s20_qty;
+            worksheet.getCell(`AD${value_plm_row}`).value = row.s21_qty;
+            worksheet.getCell(`AE${value_plm_row}`).value = row.s22_qty;
+            worksheet.getCell(`AF${value_plm_row}`).value = row.s23_qty;
+            worksheet.getCell(`AG${value_plm_row}`).value = row.s24_qty;
+            worksheet.getCell(`AH${value_plm_row}`).value = row.s25_qty;
+            worksheet.getCell(`AI${value_plm_row}`).value = row.s26_qty;
+            worksheet.getCell(`AJ${value_plm_row}`).value = row.s27_qty;
+            worksheet.getCell(`AK${value_plm_row}`).value = row.s28_qty;
+            worksheet.getCell(`AL${value_plm_row}`).value = row.s29_qty;
+            worksheet.getCell(`AM${value_plm_row}`).value = row.s30_qty;
           }
 
           
@@ -3156,7 +3172,7 @@ function CreateNew()
                     <Typography.Text strong style={{color:"blue"}}>Create Date :</Typography.Text>
                     <p><b>{moment(var_crdate).format('YYYY/MM/DD')}</b></p>
 
-                    <Typography.Text strong style={{color:"blue"}}>OLR Description :</Typography.Text>
+                    <Typography.Text strong style={{color:"blue"}}>Order Description :</Typography.Text>
                     <p><b>{var_olr_desc}</b></p>
                     
                   </Col>
@@ -3171,7 +3187,7 @@ function CreateNew()
                     <Typography.Text strong style={{color:"blue"}}>Previous Style No :</Typography.Text>
                     <p><b>{var_oldstyleno}</b></p>
 
-                    <Typography.Text strong style={{color:"blue"}}>OLR Item :</Typography.Text>
+                    <Typography.Text strong style={{color:"blue"}}>Order Item :</Typography.Text>
                     <p><b>{var_olr_item}</b></p>
                  
                   </Col>
@@ -3186,17 +3202,17 @@ function CreateNew()
                     <Typography.Text strong style={{color:"blue"}}>PLM Bom Version :</Typography.Text>
                     <p><b>{var_plm_bom}</b></p>
 
-                    <Typography.Text strong style={{color:"blue"}}>OLR Season :</Typography.Text>
+                    <Typography.Text strong style={{color:"blue"}}>Order Season :</Typography.Text>
                     <p><b>{var_olr_season}</b></p>
                  
                   </Col>
                   <Col span={4}>
 
-                    <p style={{color:"red"}}>** Click Here To Upload OLR File</p>
+                    <p style={{color:"red"}}>** Click Here To Upload Order File</p>
 
                     <div id="upload-box">
                       <Input type="file" onChange={handleUploadOLR} accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"/>
-                      <p><b>Filename:</b></p>
+                      
                     </div>
 
                   </Col>
@@ -3256,7 +3272,7 @@ function CreateNew()
                 } 
               </tbody>
             </table>
-            <p style={{color:"purple",paddingLeft:"5px"}}>{ds_olr_colorset.length.toString()} Items in OLR List</p>
+            <p style={{color:"purple",paddingLeft:"5px"}}>{ds_olr_colorset.length.toString()} Items in Order List</p>
 
 
             <hr/>
@@ -3298,13 +3314,20 @@ function CreateNew()
             <p style={{color:"purple",paddingLeft:"5px"}}>{ds_plm_bomfull.length.toString()} Items in PLM List</p>
             </Col>
 
-            <AntdDModal visible={isOpenPlmColorways} title="PLM Garmet Colorways in PLM Order" onOk={()=>setisOpenPlmColorways(false)} onCancel={()=>setisOpenPlmColorways(false)}>
+            <AntdDModal width={1000} visible={isOpenPlmColorways} title="PLM Garmet Colorways in PLM Order" onOk={()=>setisOpenPlmColorways(false)} onCancel={()=>setisOpenPlmColorways(false)}>
+               <table>
+               <thead>
+                 <tr style={{fontWeight:"bold"}}><td style={{padding:"10px"}}>Order</td><td style={{padding:"10px"}}>Without Dye Route</td><td style={{padding:"10px"}}>PLM Color Name</td></tr>
+               </thead>
+               <tbody>
                 {
                   ds_plmcolorways.map((row) => {
                     return(<>
-                        <p>{row.cw_order} . {row.cw_name}</p>
+                        <tr><td style={{padding:"10px"}}>{row.cw_order}</td><td style={{padding:"10px"}}>{row.cw_name}</td><td style={{padding:"10px"}}>{row.cw_desc}</td></tr>
                     </>);})
                 }
+              </tbody>
+              </table>
             </AntdDModal>
 
             <AntdDModal visible={isOpenOrder1} title="Update All Ordering Dates" onOk={handleOkOrder1} onCancel={()=>setisOpenOrder1(false)}>

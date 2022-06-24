@@ -130,7 +130,7 @@ function App() {
         </Button>
       </Form.Item>
     </Form>
-        <p style={{color:"#343434"}}>Ver 22.3.9</p>
+        <p style={{color:"#343434"}}>Ver 22.6.23</p>
     </Card>
       </header>
     </div>
