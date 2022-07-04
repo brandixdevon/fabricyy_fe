@@ -1648,6 +1648,17 @@ function CreateNew()
 
       async function getPLMSeasonList()
       {
+        if(ds_olr_colorset.length < 1)
+        {
+          notification['error']({
+            message: 'Data Error',
+            description: 'Please upload order data file. Order data list can not be in zero.',
+            style:{color: '#000',border: '1px solid #ff6961',backgroundColor: '#ffa39e'},
+          });
+
+          return;
+        }
+
         setvar_drpseason(true);
         setisloading(true);
 
@@ -2188,6 +2199,17 @@ function CreateNew()
 
       async function GetBom()
       {
+        if(ds_olr_colorset.length < 1)
+        {
+          notification['error']({
+            message: 'Data Error',
+            description: 'Please upload order data file. Order data list can not be in zero.',
+            style:{color: '#000',border: '1px solid #ff6961',backgroundColor: '#ffa39e'},
+          });
+
+          return;
+        }
+        
         if(var_plmrevbom === "")
         {
           notification['error']({
