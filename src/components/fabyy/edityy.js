@@ -49,6 +49,7 @@ function CreateNew()
     const [isOpenBomItem, setisOpenBomItem] = React.useState(false);
     const [isOpenSizeItem, setisOpenSizeItem] = React.useState(false);
     const [isOpenPlmColorways, setisOpenPlmColorways] = React.useState(false);
+    const [isOpenPlmBomItems, setisOpenPlmBomItems] = React.useState(false);
 
     const [sel_Size_Id, setsel_Size_Id] = React.useState("");
     const [sel_Size_Gmtway, setsel_Size_Gmtway] = React.useState("");
@@ -90,6 +91,7 @@ function CreateNew()
     const [ds_seasonlist,setds_seasonlist] = React.useState([]);
     const [ds_bomlist,setds_bomlist] = React.useState([]);
     const [ds_plmcolorways,setds_plmcolorways] = React.useState([]);
+    const [ds_plmbomitems,setds_plmbomitems] = React.useState([]);
 
     const [ds_plm_bomfull,setds_plm_bomfull] = React.useState([]);
     const [ds_factory,setds_factory] = React.useState([]);
@@ -122,80 +124,91 @@ function CreateNew()
     
     React.useEffect(()=>{
 
-      const sendOptions = {
-        method: 'post',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-            "username" : username , 
-            "typeid" : fabyyid
-        })
-      };
-    
-      fetch(`${apiurl}/fabricyy/listofyy`,sendOptions)
-      .then(res => res.json())
-      .then(response => { 
+        const sendOptions = {
+          method: 'post',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+              "username" : username , 
+              "typeid" : fabyyid
+          })
+        };
+      
+        fetch(`${apiurl}/fabricyy/listofyy`,sendOptions)
+        .then(res => res.json())
+        .then(response => { 
 
-          if(response.Type === "SUCCESS")
-          {
-              setvar_customer(response.Data[0].cus_name);
-              setvar_styleno(response.Data[0].cus_sty_no);
-              setvar_m3styleno(response.Data[0].m3_sty_no);
-              setvar_oldstyleno(response.Data[0].old_sty_no);
-              setvar_factory(response.Data[0].fac_name);
-              setvar_crdate(response.Data[0].create_ts);
+            if(response.Type === "SUCCESS")
+            {
+                setvar_customer(response.Data[0].cus_name);
+                setvar_styleno(response.Data[0].cus_sty_no);
+                setvar_m3styleno(response.Data[0].m3_sty_no);
+                setvar_oldstyleno(response.Data[0].old_sty_no);
+                setvar_factory(response.Data[0].fac_name);
+                setvar_crdate(response.Data[0].create_ts);
 
-              setvar_olr_desc(response.Data[0].yy_desc);
-              setvar_olr_item(response.Data[0].yy_item);
-              setvar_olr_season(response.Data[0].yy_season);
-              setvar_yy_user(response.Data[0].username);
+                setvar_olr_desc(response.Data[0].yy_desc);
+                setvar_olr_item(response.Data[0].yy_item);
+                setvar_olr_season(response.Data[0].yy_season);
+                setvar_yy_user(response.Data[0].username);
 
 
-              setvar_plm_style(response.Data[0].plm_style);
-              setvar_plm_season(response.Data[0].plm_seasonname);
-              setvar_plm_bom(response.Data[0].plm_bomname);
-          }
-          else
-          {
-              notification['error']({
-                  message: 'Data Error',
-                  description: 'Data Loading Error.',
-                  style:{color: '#000',border: '1px solid #ff6961',backgroundColor: '#ffa39e'},
-                });
-          }
+                setvar_plm_style(response.Data[0].plm_style);
+                setvar_plm_season(response.Data[0].plm_seasonname);
+                setvar_plm_bom(response.Data[0].plm_bomname);
+            }
+            else
+            {
+                notification['error']({
+                    message: 'Data Error',
+                    description: 'Data Loading Error.',
+                    style:{color: '#000',border: '1px solid #ff6961',backgroundColor: '#ffa39e'},
+                  });
+            }
 
-           
-      })
-      .catch(error => {
-
-          notification['error']({
-              message: 'Data Error',
-              description: error,
-              style:{color: '#000',border: '1px solid #ff6961',backgroundColor: '#ffa39e'},
-            });
-
-      });
-
-      fetch(`${apiurl}/fabricyy/getplmitemsindb/${fabyyid}`)
-      .then(res_5 => res_5.json())
-      .then(response_5 => 
-        {
-          if(response_5.Type === "SUCCESS")
-          {
-            setds_plm_bomfull(response_5.Data);
             
-          }
         })
+        .catch(error => {
+
+            notification['error']({
+                message: 'Data Error',
+                description: error,
+                style:{color: '#000',border: '1px solid #ff6961',backgroundColor: '#ffa39e'},
+              });
+
+        });
+
+        fetch(`${apiurl}/fabricyy/getplmitemsindb/${fabyyid}`)
+        .then(res_5 => res_5.json())
+        .then(response_5 => 
+          {
+            if(response_5.Type === "SUCCESS")
+            {
+              setds_plm_bomfull(response_5.Data);
+              
+            }
+          })
+
+        fetch(`${apiurl}/fabricyy/getplmbomitems/${fabyyid}`)
+        .then(res_items => res_items.json())
+        .then(response_items => 
+          {
+            if(response_items.Type === "SUCCESS")
+            {
+              setds_plmbomitems(response_items.Data);
+              
+            }
+          })
 
         fetch(`${apiurl}/fabricyy/getplmcolorways/${fabyyid}`)
-      .then(res_plmcolor => res_plmcolor.json())
-      .then(response_plmcolor => 
-        {
-          if(response_plmcolor.Type === "SUCCESS")
+        .then(res_plmcolor => res_plmcolor.json())
+        .then(response_plmcolor => 
           {
-            setds_plmcolorways(response_plmcolor.Data);
-            
-          }
-        })
+            if(response_plmcolor.Type === "SUCCESS")
+            {
+              setds_plmcolorways(response_plmcolor.Data);
+              
+            }
+          })
 
         fetch(`${apiurl}/fabricyy/getolrsizes/${fabyyid}`)
         .then(res_5 => res_5.json())
@@ -208,7 +221,7 @@ function CreateNew()
             }
           })
 
-          fetch(`${apiurl}/fabricyy/getolrdata/${fabyyid}`)
+        fetch(`${apiurl}/fabricyy/getolrdata/${fabyyid}`)
         .then(res_5 => res_5.json())
         .then(response_5 => 
           {
@@ -220,33 +233,33 @@ function CreateNew()
           })
 
           fetch(`${apiurl}/masterdata/getfactories`)
-        .then(res => res.json())
-        .then(response => { 
-  
-            if(response.Type === "SUCCESS")
-            {
-              setds_factory(response.Data);
-            }
-            else
-            {
-                notification['error']({
-                    message: 'Data Error',
-                    description: 'Factories Data Loading Error.',
-                    style:{color: '#000',border: '1px solid #ff6961',backgroundColor: '#ffa39e'},
-                  });
-            }
-  
-             
-        })
-        .catch(error => {
-  
-            notification['error']({
-                message: 'Data Error',
-                description: error,
-                style:{color: '#000',border: '1px solid #ff6961',backgroundColor: '#ffa39e'},
-              });
-  
-        });
+          .then(res => res.json())
+          .then(response => { 
+    
+              if(response.Type === "SUCCESS")
+              {
+                setds_factory(response.Data);
+              }
+              else
+              {
+                  notification['error']({
+                      message: 'Data Error',
+                      description: 'Factories Data Loading Error.',
+                      style:{color: '#000',border: '1px solid #ff6961',backgroundColor: '#ffa39e'},
+                    });
+              }
+    
+              
+          })
+          .catch(error => {
+    
+              notification['error']({
+                  message: 'Data Error',
+                  description: error,
+                  style:{color: '#000',border: '1px solid #ff6961',backgroundColor: '#ffa39e'},
+                });
+    
+          });
 
     },[apiurl,username,fabyyid])
 
@@ -2286,84 +2299,126 @@ function CreateNew()
                                     if(response_4.Type === "SUCCESS")
                                     {
 
-                                      fetch(`${apiurl}/fabricyy/plmlineprocess/${fabyyid}`)
-                                      .then(res_plmlinevpo => res_plmlinevpo.json())
-                                      .then(response_plmlinevpo => 
+                                      //if success need to sync
+                                      const sendOptions_plmtoyy = {
+                                        method: 'post',
+                                        headers: { 'Content-Type': 'application/json' },
+                                        body: JSON.stringify({
+                                            "fabric_yyid" : fabyyid , 
+                                            "plmstyleid" : var_plmstyle , 
+                                            "plmseasonid" : var_plmsseasonID , 
+                                            "plmbomid" : var_plmrevbomID , 
+                                            "token" : var_plmsession})
+                                      };
+                    
+                                      fetch(`${apiurl}/fabricyy/updateyyplmdata`,sendOptions_plmtoyy)
+                                      .then(res_plmtoyy => res_plmtoyy.json())
+                                      .then(response_plmtoyy =>
                                         {
-                                          if(response_plmlinevpo.Type === "SUCCESS")
+                                          if(response_plmtoyy.Type === "SUCCESS")
                                           {
-                                            
                                             fetch(`${apiurl}/fabricyy/getplmcolorways/${fabyyid}`)
                                             .then(res_plmcolor => res_plmcolor.json())
                                             .then(response_plmcolor => 
                                               {
+
                                                 if(response_plmcolor.Type === "SUCCESS")
                                                 {
                                                   setds_plmcolorways(response_plmcolor.Data);
-                                                  
+
+                                                  fetch(`${apiurl}/fabricyy/getplmbomitems/${fabyyid}`)
+                                                  .then(res_items => res_items.json())
+                                                  .then(response_items => 
+                                                    {
+                                                      if(response_items.Type === "SUCCESS")
+                                                      {
+                                                        setds_plmbomitems(response_items.Data);
+
+                                                        notification['success']({
+                                                          message: 'Success Notification',
+                                                          description:'PLM BOM Items Loading Completed.' ,
+                                                          style:{color: '#000',border: '1px solid #ccffcc',backgroundColor: '#99ff66'},
+                                                        });
+                                  
+                                                        RefreshHeaders();
+
+                                                        setisloading(false);
+                                                        
+                                                      }
+                                                      else
+                                                      {
+                                                        setisloading(false);
+                                                        notification['error']({
+                                                            message: 'Data Error',
+                                                            description: 'Data Loading Error. (CODE X000106)',
+                                                            style:{color: '#000',border: '1px solid #ff6961',backgroundColor: '#ffa39e'},
+                                                          });
+                                                      }
+
+                                                    })
+ 
+                                                }
+                                                else
+                                                {
+                                                  setisloading(false);
+                                                  notification['error']({
+                                                      message: 'Data Error',
+                                                      description: 'Data Loading Error. (CODE X000105)',
+                                                      style:{color: '#000',border: '1px solid #ff6961',backgroundColor: '#ffa39e'},
+                                                    });
                                                 }
                                               })
-
-                                            const sendOptions_plmtoyy = {
-                                              method: 'post',
-                                              headers: { 'Content-Type': 'application/json' },
-                                              body: JSON.stringify({
-                                                  "fabric_yyid" : fabyyid , 
-                                                  "plmstyleid" : var_plmstyle , 
-                                                  "plmseasonid" : var_plmsseasonID , 
-                                                  "plmbomid" : var_plmrevbomID , 
-                                                  "token" : var_plmsession})
-                                            };
-
-                                            fetch(`${apiurl}/fabricyy/updateyyplmdata`,sendOptions_plmtoyy)
-                                            .then(res_plmtoyy => res_plmtoyy.json())
-                                            .then(response_plmtoyy =>
-                                              {
-
-                                                notification['success']({
-                                                  message: 'Success Notification',
-                                                  description:'PLM BOM Items Loading Completed.' ,
-                                                  style:{color: '#000',border: '1px solid #ccffcc',backgroundColor: '#99ff66'},
-                                                });
-
-                                                RefreshHeaders();
-          
-                                                fetch(`${apiurl}/fabricyy/getplmitemsindb/${fabyyid}`)
-                                                .then(res_5 => res_5.json())
-                                                .then(response_5 => 
-                                                  {
-                                                    if(response_5.Type === "SUCCESS")
-                                                    {
-                                                      setds_plm_bomfull(response_5.Data);
-                                                      
-                                                      setisloading(false);
-                                                      
-                                                    }
-                                                  })
-
-                                              })
-                                            
                                           }
                                           else
                                           {
                                             setisloading(false);
                                             notification['error']({
                                                 message: 'Data Error',
-                                                description: 'Data Loading Error.',
+                                                description: 'Data Loading Error. (CODE X000104)',
                                                 style:{color: '#000',border: '1px solid #ff6961',backgroundColor: '#ffa39e'},
                                               });
-                                          }
+                                          } 
+                                          
+                    
                                         })
+                                      
  
                                       
+                                    }
+                                    else
+                                    {
+                                      setisloading(false);
+                                      notification['error']({
+                                          message: 'Data Error',
+                                          description: 'Data Loading Error. (CODE X000103)',
+                                          style:{color: '#000',border: '1px solid #ff6961',backgroundColor: '#ffa39e'},
+                                        });
                                     }
                                   })
               
                                 
                               }
+                              else
+                              {
+                                setisloading(false);
+                                notification['error']({
+                                    message: 'Data Error',
+                                    description: 'Data Loading Error. (CODE X000102)',
+                                    style:{color: '#000',border: '1px solid #ff6961',backgroundColor: '#ffa39e'},
+                                  });
+                              }
                             })
         
                           
+                        }
+                        else
+                        {
+                          setisloading(false);
+                          notification['error']({
+                              message: 'Data Error',
+                              description: 'Data Loading Error. (CODE X000101)',
+                              style:{color: '#000',border: '1px solid #ff6961',backgroundColor: '#ffa39e'},
+                            });
                         }
                       })
   
@@ -2376,7 +2431,7 @@ function CreateNew()
                   setisloading(false);
                     notification['error']({
                         message: 'Data Error',
-                        description: 'Data Loading Error.',
+                        description: 'Data Loading Error.  (CODE X000101)',
                         style:{color: '#000',border: '1px solid #ff6961',backgroundColor: '#ffa39e'},
                       });
                 }
@@ -2397,6 +2452,81 @@ function CreateNew()
         }
 
         
+      }
+
+      async function ProcessLines()
+      {
+        if(ds_plmcolorways.length < 1)
+        {
+          notification['error']({
+            message: 'Data Error',
+            description: 'Colorways not available.Please sync plm bom data.',
+            style:{color: '#000',border: '1px solid #ff6961',backgroundColor: '#ffa39e'},
+          });
+
+          return;
+        }
+
+        if(ds_plmbomitems.length < 1)
+        {
+          notification['error']({
+            message: 'Data Error',
+            description: 'Plm bom items not available.Please sync plm bom data.',
+            style:{color: '#000',border: '1px solid #ff6961',backgroundColor: '#ffa39e'},
+          });
+
+          return;
+        }
+
+        setisloading(true);
+
+            fetch(`${apiurl}/fabricyy/plmlineprocess/${fabyyid}`)
+            .then(res_plmlinevpo => res_plmlinevpo.json())
+            .then(response_plmlinevpo => 
+              {
+                if(response_plmlinevpo.Type === "SUCCESS")
+                {
+
+                  fetch(`${apiurl}/fabricyy/getplmitemsindb/${fabyyid}`)
+                      .then(res_5 => res_5.json())
+                      .then(response_5 => 
+                        {
+                          if(response_5.Type === "SUCCESS")
+                          {
+                            setds_plm_bomfull(response_5.Data);
+                            
+                            setisloading(false);
+
+                            notification['success']({
+                              message: 'Success Notification',
+                              description:'FAbric YY Line Items Processing Completed.' ,
+                              style:{color: '#000',border: '1px solid #ccffcc',backgroundColor: '#99ff66'},
+                            });
+                            
+                          }
+                          else
+                          {
+                            setisloading(false);
+                            notification['error']({
+                                message: 'Data Error',
+                                description: 'Data Processing Error.',
+                                style:{color: '#000',border: '1px solid #ff6961',backgroundColor: '#ffa39e'},
+                              });
+                          }
+                        })
+                  
+                  
+                }
+                else
+                {
+                  setisloading(false);
+                  notification['error']({
+                      message: 'Data Error',
+                      description: 'Data Loading Error.',
+                      style:{color: '#000',border: '1px solid #ff6961',backgroundColor: '#ffa39e'},
+                    });
+                }
+              })
       }
 
       async function GetBomItemforEdit(value)
@@ -3302,8 +3432,9 @@ function CreateNew()
             <table style={{marginLeft:"5px"}}>
               <thead style={{fontSize:"10px",textAlign:"center"}}>
                 <tr>
-                  <th colSpan={5}></th>
-                  <th colSpan={6}><Button type="primary" onClick={()=>setisOpenPlmColorways(true)}>PLM GARMENT COLORWAYS</Button></th>
+                  <th colSpan={4}><Button type="primary" onClick={()=>setisOpenPlmColorways(true)}>PLM GARMENT COLORWAYS</Button></th>
+                  <th colSpan={4}><Button type="primary" onClick={()=>setisOpenPlmBomItems(true)}>PLM BOM ITEMS</Button></th>
+                  <th colSpan={3}><Button type="primary" danger onClick={ProcessLines}>PROCESS LINES</Button></th>
                   <th style={{width:"5%",fontSize:"20px"}}><CalendarTwoTone onClick={()=> setisOpenOrder1(true)} style={{cursor:"pointer"}} twoToneColor="#eb2f96" /></th>
                   <th style={{width:"5%",fontSize:"20px"}}><CalendarTwoTone onClick={()=> setisOpenOrder2(true)} style={{cursor:"pointer"}}  twoToneColor="#eb2f96" /></th>
                   <th style={{width:"5%",fontSize:"20px"}}><CalendarTwoTone onClick={()=> setisOpenOrder3(true)} style={{cursor:"pointer"}}  twoToneColor="#eb2f96" /></th>
@@ -3346,6 +3477,38 @@ function CreateNew()
                   ds_plmcolorways.map((row) => {
                     return(<>
                         <tr><td style={{padding:"10px"}}>{row.cw_order}</td><td style={{padding:"10px"}}>{row.cw_name}</td><td style={{padding:"10px"}}>{row.cw_desc}</td></tr>
+                    </>);})
+                }
+              </tbody>
+              </table>
+            </AntdDModal>
+
+            <AntdDModal width={1000} visible={isOpenPlmBomItems} title="PLM Garmet Colorways in PLM Order" onOk={()=>setisOpenPlmBomItems(false)} onCancel={()=>setisOpenPlmBomItems(false)}>
+               <table>
+               <thead>
+                 <tr style={{fontWeight:"bold"}}>
+                  <td style={{padding:"5px"}}>Type</td>
+                  <td style={{padding:"5px"}}>Placement</td>
+                  <td style={{padding:"5px"}}>Item Name</td>
+                  <td style={{padding:"5px"}}>Item Desc</td>
+                  <td style={{padding:"5px"}}>Color</td>
+                  <td style={{padding:"5px"}}>Supplier</td>
+                  <td style={{padding:"5px"}}>CW</td>
+                 </tr>
+               </thead>
+               <tbody>
+                {
+                  ds_plmbomitems.map((row) => {
+                    return(<>
+                        <tr>
+                          <td style={{padding:"5px"}}>{row.plm_fab_type}</td>
+                          <td style={{padding:"5px"}}>{row.plm_placement}</td>
+                          <td style={{padding:"5px"}}>{row.plm_item_name}</td>
+                          <td style={{padding:"5px"}}>{row.plm_item_desc}</td>
+                          <td style={{padding:"5px"}}>{row.plm_color}</td>
+                          <td style={{padding:"5px"}}>{row.plm_supplier}</td>
+                          <td style={{padding:"5px"}}>{row.plm_cw}</td>
+                        </tr>
                     </>);})
                 }
               </tbody>

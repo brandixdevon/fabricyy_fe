@@ -7,8 +7,8 @@ import { Redirect } from 'react-router-dom';
 
 function App() {
 
-  //localStorage.setItem('session_api','http://bff-sr-01:8280');
-  localStorage.setItem('session_api','http://localhost:1500');
+  localStorage.setItem('session_api','http://bff-sr-01:8280');
+  //localStorage.setItem('session_api','http://localhost:1500');
   var apiurl = localStorage.getItem('session_api');
   
 
@@ -130,7 +130,7 @@ function App() {
         </Button>
       </Form.Item>
     </Form>
-        <p style={{color:"#343434"}}>Ver 22.6.23</p>
+        <p style={{color:"#343434"}}>Ver 22.7.7</p>
     </Card>
       </header>
     </div>
